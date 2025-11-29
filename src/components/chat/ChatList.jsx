@@ -10,8 +10,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Loader2 } from 'lucide-react';
 
-export const ChatList = observer(() => {
+// ВОТ ЭТА СТРОЧКА — КЛЮЧ К ПОБЕДЕ!
+export const ChatList = observer(({ onChatSelect }) => {
   const currentUserId = profileStore.profile?.id;
+
+  const handleChatClick = (chatId) => {
+    chatStore.activateChat(chatId);
+    onChatSelect?.(); // Только на мобильных вызывается
+  };
 
   if (chatStore.loadingChats) {
     return (
@@ -37,7 +43,7 @@ export const ChatList = observer(() => {
         {chatStore.chats.map((chat) => {
           const isClient = chat.clientId === currentUserId;
           const participant = isClient ? chat.seller : chat.client;
-          const lastMessage = chat.messages?.[0]; // уже отсортировано по updatedAt
+          const lastMessage = chat.messages?.[0];
 
           const name = participant.name || participant.email.split('@')[0] || "Пользователь";
           const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -45,7 +51,7 @@ export const ChatList = observer(() => {
           return (
             <div
               key={chat.id}
-              onClick={() => chatStore.activateChat(chat.id)}
+              onClick={() => handleChatClick(chat.id)}
               className={`
                 flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all
                 hover:bg-zinc-100 dark:hover:bg-white/5
