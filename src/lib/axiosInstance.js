@@ -55,7 +55,8 @@ function toErrorMessage(payload) {
 // Axios instance
 // ==========================================
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  // In production, ensure we hit the deployed API by default if env is missing
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://klab-server.onrender.com',
   withCredentials: true,
 });
 

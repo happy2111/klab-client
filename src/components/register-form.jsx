@@ -96,10 +96,10 @@ export const RegisterForm = observer(({ className, ...props }) => {
                   className="mt-2"
                 >
                   <TabsList className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-white/20 rounded-md">
-                    <TabsTrigger value="CLIENT" className={cn(role === 'CLIENT' ? 'bg-blue-600 text-white' : '', 'w-1/2')}>
+                    <TabsTrigger value="CLIENT" className={cn(role === 'CLIENT' ? 'bg-blue-600 text-black dark:text-white' : '', 'w-1/2')}>
                       Client
                     </TabsTrigger>
-                    <TabsTrigger value="SELLER" className={cn(role === 'SELLER' ? 'bg-blue-600 text-white' : '', 'w-1/2')}>
+                    <TabsTrigger value="SELLER" className={cn(role === 'SELLER' ? 'bg-blue-600 text-black dark:text-white' : '', 'w-1/2')}>
                       Seller
                     </TabsTrigger>
                   </TabsList>
