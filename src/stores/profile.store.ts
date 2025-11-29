@@ -34,11 +34,11 @@ class ProfileStore {
     if (this.hasFetched) return;
 
     this.isLoading = true;
-    this.hasFetched = true;
     try {
       const data = await this.service.fetchProfile();
       runInAction(() => {
         this.profile = data;
+        this.hasFetched = true; // mark fetched only on success
         // Синхронизация с authStore
         if (authStore.user) {
           authStore.user = { ...authStore.user, ...data };
@@ -46,6 +46,9 @@ class ProfileStore {
       });
       return true;
     } catch (e: any) {
+      runInAction(() => {
+        this.hasFetched = false; // allow retry on failure
+      });
       this.handleError(e, "Профиль маълумотларини юклаб бўлмади");
       return false;
     } finally {
@@ -90,6 +93,7 @@ class ProfileStore {
   clearProfile() {
     runInAction(() => {
       this.profile = null;
+      this.hasFetched = false;
     });
   }
 }

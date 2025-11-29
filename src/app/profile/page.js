@@ -15,6 +15,9 @@ const ProfilePageContent = observer(() => {
   const router = useRouter();
 
   useEffect(() => {
+    // Wait for auth initialization
+    if (authStore.appLoading) return;
+
     if (!authStore.isAuth) {
       router.replace('/login');
       return;
@@ -22,17 +25,9 @@ const ProfilePageContent = observer(() => {
     if (!profileStore.profile && !profileStore.isLoading) {
       profileStore.fetchProfile();
     }
-  }, [authStore.isAuth, profileStore.profile, profileStore.isLoading, router]);
+  }, [authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.isLoading, router]);
 
-  if (!authStore.isAuth) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-500">Перенаправление на вход...</p>
-      </div>
-    );
-  }
-
-  if (!profileStore.profile && profileStore.isLoading) {
+  if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.isLoading)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
