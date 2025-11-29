@@ -1,22 +1,18 @@
 import api from "@/lib/axiosInstance";
-// Предположим, что у нас есть типы для чатов и сообщений,
-// которые мы определим позже (Chat, Message).
+import type { Chat, Message } from "@/types/chat.types";
 
 export class ChatService {
-  /** Создает новый чат или возвращает существующий */
-  async createChat(dto: { clientId: string, sellerId: string }): Promise<any> {
+  async createChat(dto: { clientId: string; sellerId: string }): Promise<Chat> {
     const res = await api.post("/chats", dto);
     return res.data;
   }
 
-  /** Получает список чатов текущего пользователя */
-  async fetchMyChats(): Promise<any[]> { // TODO: Replace 'any[]' with Chat[] type
+  async fetchMyChats(): Promise<Chat[]> {
     const res = await api.get("/chats");
     return res.data;
   }
 
-  /** Получает историю сообщений для конкретного чата */
-  async fetchMessages(chatId: string): Promise<any[]> { // TODO: Replace 'any[]' with Message[] type
+  async fetchMessages(chatId: string): Promise<Message[]> {
     const res = await api.get(`/chats/${chatId}/messages`);
     return res.data;
   }

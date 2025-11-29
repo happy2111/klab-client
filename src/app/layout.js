@@ -1,18 +1,9 @@
-import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import {ThemeProvider} from "@/components/theme-provider";
 import Navbar from "@/components/Navbar";
 import {Toaster} from "@/components/ui/sonner";
+import {AppInitializer} from "@/app/init";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata = {
   title: "Osmon",
@@ -20,13 +11,13 @@ export const metadata = {
 };
 
 export default function RootLayout({children}) {
-
   return (
     <html lang="en" suppressHydrationWarning>
     <body
       suppressHydrationWarning
       className={` antialiased`}
     >
+      <AppInitializer/>
       <ThemeProvider
         attribute="class"
         defaultTheme="system"

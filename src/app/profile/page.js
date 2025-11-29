@@ -1,57 +1,78 @@
-// src/app/profile/page.jsx (обновленный)
 "use client";
 
-import { ProfileDetails } from '@/components/ProfileDetails';
-import { PasswordChangeForm } from '@/components/PasswordChangeForm';
-import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import { observer } from 'mobx-react-lite';
+import { useRouter } from "next/navigation";
 import { authStore } from "@/stores/auth.store";
-import { useEffect } from "react"; // 💡 Нужен useEffect
-import { useRouter } from "next/navigation"; // 💡 Нужен useRouter
 import { profileStore } from "@/stores/profile.store";
-import { observer } from 'mobx-react-lite'; // 💡 Обернуть для реактивности
+import { ProfileDetails } from '@/components/profile/ProfileDetails';
+import { PasswordChangeForm } from '@/components/profile/PasswordChangeForm';
+import { Button } from "@/components/ui/button";
+import ProfileProducts from "@/components/product/ProfileProducts";
+import { Loader2 } from "lucide-react";
 
-function ProfilePageContent() { // Используем отдельную функцию, чтобы обернуть ее в observer
+const ProfilePageContent = observer(() => {
   const router = useRouter();
 
   useEffect(() => {
     if (!authStore.isAuth) {
       router.replace('/login');
-    } else {
+      return;
+    }
+    if (!profileStore.profile && !profileStore.isLoading) {
       profileStore.fetchProfile();
     }
-  }, [router]);
+  }, [authStore.isAuth, profileStore.profile, profileStore.isLoading, router]);
 
   if (!authStore.isAuth) {
-    return <div className="flex min-h-screen items-center justify-center">
-      {/* Можно добавить спиннер или Loader component */}
-      <p className="text-gray-500 dark:text-gray-400">Перенаправление...</p>
-    </div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-gray-500">Перенаправление на вход...</p>
+      </div>
+    );
   }
 
-  return (
-    <div className="flex min-h-screen items-start justify-center bg-zinc-50 dark:bg-black py-10 px-4">
-      <main className="w-full max-w-4xl flex flex-col container">
-        <section>
-          <ProfileDetails />
-        </section>
+  if (!profileStore.profile && profileStore.isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
-        <section>
-          <PasswordChangeForm />
-        </section>
-
-        <Button
-          onClick={() => {
-            authStore.logout();
-            router.replace('/');
-          }}
-          className="max-w-lg w-full mx-auto mt-4 bg-red-600 hover:bg-red-700"
-        >
-          Logout
+  if (!profileStore.profile) {
+    return (
+      <div className="flex min-h-screen items-center justify-center flex-col gap-6">
+        <p className="text-red-500 text-xl">Профиль не загружен</p>
+        <Button onClick={() => profileStore.fetchProfile()} variant="outline">
+          Повторить попытку
         </Button>
+      </div>
+    );
+  }
+
+  const userProducts = profileStore.profile.products ?? [];
+
+  return (
+    <div className="min-h-screen bg-zinc-50 dark:bg-black py-10 px-4">
+      <main className="container mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          <ProfileDetails />
+          <div className="flex flex-col gap-6">
+            <PasswordChangeForm />
+            <Button
+              onClick={() => authStore.logout()}
+              className="bg-red-600 hover:bg-red-700 text-white font-medium"
+            >
+              Чиқиш (Logout)
+            </Button>
+          </div>
+        </div>
+
+        <ProfileProducts products={userProducts} />
       </main>
     </div>
   );
-}
+});
 
-// ✅ Обернуть компонент в observer, чтобы он реагировал на изменение authStore.isAuth
-export default observer(ProfilePageContent);
+export default ProfilePageContent;

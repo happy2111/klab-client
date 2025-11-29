@@ -42,7 +42,7 @@ export const PasswordChangeForm = observer(() => {
   };
 
   return (
-    <Card className="w-full mt-4 max-w-lg mx-auto bg-white dark:bg-black border-gray-300 dark:border-white/10">
+    <Card className="max-w-2xl w-full mx-auto shadow-xl">
       <CardHeader>
         <CardTitle className="text-xl text-black dark:text-white">
           Сменить пароль
@@ -62,7 +62,7 @@ export const PasswordChangeForm = observer(() => {
                 value={passwords.currentPassword}
                 onChange={handleChange}
                 required
-                className="pl-10 text-black dark:text-white bg-white dark:bg-black border-gray-300 dark:border-white/10 focus:border-blue-600"
+                className=" text-black dark:text-white bg-white dark:bg-black/20 border-gray-300 dark:border-white/10 focus:border-blue-600"
               />
             </div>
           </div>
@@ -79,7 +79,7 @@ export const PasswordChangeForm = observer(() => {
                 value={passwords.newPassword}
                 onChange={handleChange}
                 required
-                className="pl-10 text-black dark:text-white bg-white dark:bg-black border-gray-300 dark:border-white/10 focus:border-blue-600"
+                className="text-black dark:text-white bg-white dark:bg-black/20 border-gray-300 dark:border-white/10 focus:border-blue-600"
               />
             </div>
             {error && <p className="text-sm text-red-500 mt-1">{error}</p>}

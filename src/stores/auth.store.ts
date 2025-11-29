@@ -2,15 +2,17 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { AuthService } from "@/services/auth.service";
 import { LoginDto, RegisterDto } from "@/services/schemas/auth.schema";
 import { toast } from "sonner";
+import {socketService} from "@/services/socket.service";
+import {chatStore} from "@/stores/chat.store";
 
 export interface User {
   id: string;
   email: string;
+  role: "ADMIN" | "SELLER" | "CLIENT";
+  createdAt: string;
+  updatedAt: string;
   phone: string;
   name: string;
-  role: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface AuthResponse {
@@ -22,11 +24,13 @@ const ACCESS_TOKEN_KEY = 'access_token';
 
 class AuthStore {
   accessToken: string | null = null;
-  user: any | null = null; // потом добавишь тип
-  authLoading = false;     // login, register, refresh
-  appLoading = false;      // инициализация при старте
+  user: User | null = null;
+  authLoading = false;
+  appLoading = false;
 
   private service = new AuthService();
+
+  private isInitialized = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -69,6 +73,7 @@ class AuthStore {
         this.accessToken = data.accessToken;
         this.user = data.user;
         this.saveTokenToStorage(data.accessToken);
+        socketService.connect();
       });
       toast.success("Тизимга кирилди!");
       return true;
@@ -125,12 +130,17 @@ class AuthStore {
         this.user = null;
         this.removeTokenFromStorage();
         this.authLoading = false;
+        chatStore.destroy();
+        socketService.disconnect();
       });
       toast.success("Чиқиш амалга оширилди");
     }
   }
 
   async init() {
+    if (this.isInitialized) return;
+    this.isInitialized = true;
+
     if (!this.accessToken) return;
 
     this.appLoading = true;

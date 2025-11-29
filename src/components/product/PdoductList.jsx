@@ -3,7 +3,7 @@
 
 import { observer } from "mobx-react-lite";
 import { productStore } from "@/stores/product.store";
-import {ProductCard} from "@/components/ProductCard";
+import {ProductCard} from "@/components/product/ProductCard";
 import {useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {chatStore} from "@/stores/chat.store";

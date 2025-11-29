@@ -21,6 +21,17 @@ export const userProfileSchema = z.object({
   phone: z.string().nullable(),
   name: z.string().nullable(),
   role: z.enum(['ADMIN', 'SELLER', 'CLIENT']),
+  products: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    price: z.number(),
+    description: z.string().nullable(),
+    photo: z.string().nullable(),
+    stock: z.string().nullable(),
+    isActive: z.boolean(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+  })),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

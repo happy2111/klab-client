@@ -127,7 +127,7 @@ const CreateProductPage = observer(() => {
                 />
               </Field>
 
-              <Field>
+              <Field className={'w-8'}>
                 <FieldLabel htmlFor="isActive">Faol</FieldLabel>
                 <Switch
                   id="isActive"

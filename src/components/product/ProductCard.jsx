@@ -17,9 +17,9 @@ export function ProductCard({
                               price,
                               photo,
                               category,
-                              onClick, // optional (Купить)
-                              seller, // Объект продавца { id, name, ... }
-                              onChat, // optional (Чат с продавцом)
+                              onClick,
+                              seller,
+                              onChat,
                               className
                             }) {
   const sellerName = seller?.name || (seller?.email ? seller.email.split('@')[0] : 'Продавец');
@@ -36,12 +36,9 @@ export function ProductCard({
       {/* Product Image */}
       <div className="relative w-full h-60 bg-gray-100 dark:bg-white/10">
         {photo ? (
-          // Вместо `fill` в `img` используем `w-full h-full` с `object-cover`
           <img
             src={"https://klab-server.onrender.com/" + photo}
             alt={name}
-            // ⚠️ Убедитесь, что ваш Next.js Image компонент (если вы его используете)
-            // настроен для внешних источников. Здесь используется обычный <img>.
             className="object-cover w-full h-full"
           />
         ) : (
@@ -51,7 +48,6 @@ export function ProductCard({
         )}
       </div>
 
-      {/* Product Info */}
       <CardHeader className="pb-2">
         <CardTitle className="text-black dark:text-white text-lg font-semibold line-clamp-1">
           {name}

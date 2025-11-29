@@ -1,116 +1,110 @@
-// src/components/chat/ChatWindow.jsx
 "use client";
 
 import { observer } from 'mobx-react-lite';
 import { chatStore } from '@/stores/chat.store';
+import { profileStore } from '@/stores/profile.store';
+import { useRef, useEffect } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Loader2, MessageSquare } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
-import { authStore } from '@/stores/auth.store';
-import { cn } from '@/lib/utils';
-import {profileStore} from "@/stores/profile.store";
-
-// Компонент для отображения одного сообщения
-const MessageBubble = ({ message, isSender }) => {
-  return (
-    <div className={cn(
-      "flex mb-3",
-      isSender ? "justify-end" : "justify-start"
-    )}>
-      <div className={cn(
-        "max-w-xs sm:max-w-md p-3 rounded-xl shadow-md",
-        isSender
-          ? "bg-blue-600 text-white rounded-br-none"
-          : "bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded-tl-none"
-      )}>
-        <p className="text-xs font-semibold mb-1 opacity-70">
-          {isSender ? 'Вы' : message.sender.name || message.sender.email}
-        </p>
-        <p className="break-words">{message.content}</p>
-        <span className="text-xs opacity-50 block mt-1 text-right">
-          {new Date(message.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-        </span>
-      </div>
-    </div>
-  );
-};
+import { Send, MessageSquare } from 'lucide-react';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 export const ChatWindow = observer(() => {
-  const [inputContent, setInputContent] = useState('');
-  const messagesEndRef = useRef(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const currentUserId = profileStore.profile?.id;
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
-  }, [chatStore.messages]);
-
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (inputContent.trim() && chatStore.currentChatId) {
-      chatStore.sendMessage(inputContent.trim());
-      setInputContent('');
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  };
+  }, [chatStore.messages]);
 
   if (!chatStore.currentChatId) {
     return (
-      <div className="flex flex-col justify-center items-center h-full bg-white dark:bg-black">
-        <MessageSquare className="w-12 h-12 text-gray-400 dark:text-gray-600 mb-4" />
-        <p className="text-lg text-gray-600 dark:text-gray-300">
-          Выберите чат для начала общения
-        </p>
+      <div className="flex-1 flex items-center justify-center text-gray-500">
+        <div className="text-center">
+          <MessageSquare className="w-20 h-20 mx-auto mb-4 text-gray-300" />
+          <p className="text-xl">Выберите чат</p>
+          <p className="text-sm mt-2">Начните общение с продавцом</p>
+        </div>
       </div>
     );
   }
 
-  if (chatStore.loadingMessages) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-      </div>
-    );
-  }
+  const currentChat = chatStore.chats.find(c => c.id === chatStore.currentChatId);
+  const participant = currentChat
+    ? (currentChat.clientId === currentUserId ? currentChat.seller : currentChat.client)
+    : null;
+
+  const handleSend = () => {
+    if (inputRef.current?.value.trim()) {
+      chatStore.sendMessage(inputRef.current.value.trim());
+      inputRef.current.value = '';
+    }
+  };
 
   return (
-    <div className="flex flex-col h-full ">
-      {/* Messages Area */}
-      <ScrollArea className="flex-1 p-4 overflow-y-scroll">
-        <div className="flex flex-col justify-end min-h-full">
-          {chatStore.messages.map((msg, index) => (
-            <MessageBubble
-              key={index}
-              message={msg}
-              isSender={msg.senderId === currentUserId}
-            />
-          ))}
-          <div ref={messagesEndRef} />
+    <div className="flex flex-col h-full">
+      {/* Заголовок чата */}
+      <div className="p-6 border-b dark:border-white/10 flex items-center gap-4">
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+          {participant?.name?.[0]?.toUpperCase() || 'U'}
+        </div>
+        <div>
+          <h2 className="font-bold text-xl text-black dark:text-white">
+            {participant?.name || participant?.email || "Пользователь"}
+          </h2>
+          <p className="text-sm text-green-600">Онлайн</p>
+        </div>
+      </div>
+
+      {/* Сообщения */}
+      <ScrollArea className="flex-1 p-6" ref={scrollRef}>
+        <div className="space-y-4">
+          {chatStore.messages.map((msg) => {
+            const isMine = msg.senderId === currentUserId;
+            return (
+              <div
+                key={msg.id}
+                className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`
+                    max-w-xs lg:max-w-md px-4 py-3 rounded-2xl
+                    ${isMine
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 dark:bg-white/10 text-black dark:text-white'
+                  }
+                    ${msg.isPending ? 'opacity-70' : ''}
+                  `}
+                >
+                  <p>{msg.content}</p>
+                  <p className={`text-xs mt-1 ${isMine ? 'text-blue-200' : 'text-gray-500'}`}>
+                    {format(new Date(msg.createdAt), 'HH:mm', { locale: ru })}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </ScrollArea>
 
-      {/* Input Area */}
-      <div className="border-t dark:border-white/10 p-4">
-        <form onSubmit={handleSend} className="flex gap-2">
+      {/* Поле ввода */}
+      <div className="p-4 border-t dark:border-white/10">
+        <div className="flex gap-3">
           <Input
-            value={inputContent}
-            onChange={(e) => setInputContent(e.target.value)}
+            ref={inputRef}
             placeholder="Напишите сообщение..."
-            className="flex-1 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700"
-            disabled={!chatStore.currentChatId}
+            className="flex-1"
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
           />
-          <Button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            disabled={!inputContent.trim() || !chatStore.currentChatId}
-          >
+          <Button onClick={handleSend} size="icon" className="bg-blue-600 hover:bg-blue-700">
             <Send className="w-5 h-5" />
           </Button>
-        </form>
+        </div>
       </div>
     </div>
   );
