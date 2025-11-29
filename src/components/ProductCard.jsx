@@ -4,9 +4,11 @@
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-// 💡 Добавляем иконки для визуализации продавца и чата
 import { User, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+import process
+  from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
+
 
 export function ProductCard({
                               id,
@@ -23,6 +25,7 @@ export function ProductCard({
   const sellerName = seller?.name || (seller?.email ? seller.email.split('@')[0] : 'Продавец');
   const sellerId = seller?.id;
 
+
   return (
     <Card
       className={cn(
@@ -35,7 +38,7 @@ export function ProductCard({
         {photo ? (
           // Вместо `fill` в `img` используем `w-full h-full` с `object-cover`
           <img
-            src={"http://localhost:5000/" + photo}
+            src={"https://klab-server.onrender.com/" + photo}
             alt={name}
             // ⚠️ Убедитесь, что ваш Next.js Image компонент (если вы его используете)
             // настроен для внешних источников. Здесь используется обычный <img>.

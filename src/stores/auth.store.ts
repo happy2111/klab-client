@@ -3,12 +3,30 @@ import { AuthService } from "@/services/auth.service";
 import { LoginDto, RegisterDto } from "@/services/schemas/auth.schema";
 import { toast } from "sonner";
 
-const ACCESS_TOKEN_KEY = 'erp_access_token';
+export interface User {
+  id: string;
+  email: string;
+  phone: string;
+  name: string;
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  user: User;
+}
+
+const ACCESS_TOKEN_KEY = 'access_token';
 
 class AuthStore {
   accessToken: string | null = null;
-  loading = false;
-  service = new AuthService();
+  user: any | null = null; // потом добавишь тип
+  authLoading = false;     // login, register, refresh
+  appLoading = false;      // инициализация при старте
+
+  private service = new AuthService();
 
   constructor() {
     makeAutoObservable(this);
@@ -44,12 +62,12 @@ class AuthStore {
   }
 
   async login(dto: LoginDto) {
-    this.loading = true;
+    this.authLoading = true;
     try {
       const data = await this.service.login(dto);
       runInAction(() => {
         this.accessToken = data.accessToken;
-        // 2. ✅ Сохранение токена
+        this.user = data.user;
         this.saveTokenToStorage(data.accessToken);
       });
       toast.success("Тизимга кирилди!");
@@ -58,26 +76,26 @@ class AuthStore {
       toast.error("Хато: логин ёки пароль нотўғри!");
       return false;
     } finally {
-      runInAction(() => (this.loading = false));
+      runInAction(() => (this.authLoading = false));
     }
   }
 
   async register(dto: RegisterDto) {
-    this.loading = true;
+    this.authLoading = true;
     try {
       const data = await this.service.register(dto);
       runInAction(() => {
         this.accessToken = data.accessToken;
-        // 2. ✅ Сохранение токена
+        this.user = data.user;
         this.saveTokenToStorage(data.accessToken);
       });
       toast.success("Рўйхатдан ўтилди!");
       return true;
-    } catch {
-      toast.error("Хато: рўйхатдан ўтиш муваффақиятсиз!");
+    } catch (error: any) {
+      toast.error("Хато: " + (error?.message || "Рўйхатдан ўтиш муваффақиятсиз бўлди!"));
       return false;
     } finally {
-      runInAction(() => (this.loading = false));
+      runInAction(() => (this.authLoading = false));
     }
   }
 
@@ -86,23 +104,45 @@ class AuthStore {
       const data = await this.service.refresh();
       runInAction(() => {
         this.accessToken = data.accessToken;
-        this.saveTokenToStorage(data.accessToken); // Обновляем токен
+        this.user = data.user;
+        this.saveTokenToStorage(data.accessToken);
       });
       return true;
     } catch {
-      this.logout();
-      return false;
+      return false; // интерцептор сам сделает logout
     }
   }
 
-  logout() {
-    this.service.logout();
-    runInAction(() => {
-      this.accessToken = null;
-      // 3. ✅ Удаление токена
-      this.removeTokenFromStorage();
-    });
-    toast.success("Чиқиш амалга оширилди");
+  async logout() {
+    this.authLoading = true;
+    try {
+      await this.service.logout();
+    } catch {
+      // ignore
+    } finally {
+      runInAction(() => {
+        this.accessToken = null;
+        this.user = null;
+        this.removeTokenFromStorage();
+        this.authLoading = false;
+      });
+      toast.success("Чиқиш амалга оширилди");
+    }
+  }
+
+  async init() {
+    if (!this.accessToken) return;
+
+    this.appLoading = true;
+    const ok = await this.refresh();
+    if (!ok) {
+      runInAction(() => {
+        this.accessToken = null;
+        this.user = null; // ← добавь!
+        this.removeTokenFromStorage();
+      });
+    }
+    this.appLoading = false;
   }
 }
 

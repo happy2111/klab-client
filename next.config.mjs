@@ -14,6 +14,11 @@ const nextConfig = {
         hostname: 'localhost',
         pathname: '/**',
         port: '5000'
+      },
+      {
+        protocol: 'https',
+        hostname: 'https://klab-server.onrender.com',
+        pathname: '/**',
       }
     ]
   }
