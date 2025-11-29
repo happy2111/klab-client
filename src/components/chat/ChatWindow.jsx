@@ -67,7 +67,7 @@ export const ChatWindow = observer(() => {
       </div>
 
       {/* Сообщения */}
-      <ScrollArea className="flex-1 px-6 bg-gray-50 dark:bg-black/30 overflow-y-scroll max-h-[70vh]">
+      <ScrollArea className="flex-1 px-6 bg-gray-50 dark:bg-black/30 overflow-y-scroll max-sm:max-h-[70vh]">
         <div className="py-6 space-y-5 max-w-3xl mx-auto">
           {messages.length === 0 ? (
             <div className="text-center text-gray-500 py-10">

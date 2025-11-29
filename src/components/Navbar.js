@@ -28,7 +28,7 @@ function Navbar() {
 
   return (
     <nav className="bg-white dark:bg-black shadow-md">
-      <div className="container">
+      <div className="container relative">
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0 gap-2 flex">
             <ModeToggle />
@@ -36,18 +36,18 @@ function Navbar() {
                 <MessageSquareShare className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all "/>Chat
             </Button>
           </div>
-          <Link href="/" className="sm:absolute left-1/2 -translate-x-1/2">
+          <Link href="/" className="absolute left-1/2 -translate-x-1/2">
               <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 Osmon
               </span>
           </Link>
           <div className="flex items-center space-x-4" suppressHydrationWarning>
-            <Link href="/cart" className="relative text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">
-              <ShoppingCart className="w-6 h-6" />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
-                0
-              </span>
-            </Link>
+            {/*<Link href="/cart" className="relative text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">*/}
+            {/*  <ShoppingCart className="w-6 h-6" />*/}
+            {/*  <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">*/}
+            {/*    0*/}
+            {/*  </span>*/}
+            {/*</Link>*/}
             {mounted ? (
               isAuthenticated ? (
                 <Link
