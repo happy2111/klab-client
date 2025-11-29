@@ -3,15 +3,15 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { observer } from 'mobx-react-lite';
 import { authStore } from '@/stores/auth.store';
 import { profileStore } from '@/stores/profile.store';
 import { chatStore } from '@/stores/chat.store';
 import { ChatList } from '@/components/chat/ChatList';
 import { ChatWindow } from '@/components/chat/ChatWindow';
 import { Loader2, MessageSquare } from 'lucide-react';
+import {socketService} from "@/services/socket.service";
 
-const ChatPage = observer(() => {
+export default function ChatPage() {
   const router = useRouter();
 
   useEffect(() => {
@@ -20,12 +20,18 @@ const ChatPage = observer(() => {
       return;
     }
 
-    // Гарантированная загрузка профиля и чатов
     if (!profileStore.profile) {
       profileStore.fetchProfile();
     }
     chatStore.fetchChats();
   }, [router]);
+
+  useEffect(() => {
+    if (authStore.isAuth) {
+      socketService.connect(); // ← СТРАХОВКА НА ВСЯКИЙ СЛУЧАЙ
+      chatStore.fetchChats();
+    }
+  }, [authStore.isAuth]);
 
   if (!authStore.isAuth || !profileStore.profile) {
     return (
@@ -40,7 +46,6 @@ const ChatPage = observer(() => {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden border dark:border-white/10 h-[85vh]">
           <div className="flex h-full">
-            {/* Левая панель — список чатов */}
             <div className="w-full sm:w-96 border-r dark:border-white/10 flex flex-col">
               <div className="p-6 border-b dark:border-white/10">
                 <h1 className="text-2xl font-bold text-black dark:text-white flex items-center gap-3">
@@ -51,7 +56,6 @@ const ChatPage = observer(() => {
               <ChatList />
             </div>
 
-            {/* Правая панель — окно чата */}
             <div className="flex-1 flex flex-col">
               <ChatWindow />
             </div>
@@ -60,6 +64,4 @@ const ChatPage = observer(() => {
       </div>
     </div>
   );
-});
-
-export default ChatPage;
+}

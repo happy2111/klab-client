@@ -4,6 +4,7 @@
 import Link from 'next/link';
 // ✅ Импортируем observer
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import {
   ShoppingCart,
   User,
@@ -18,6 +19,11 @@ import {useRouter} from "next/navigation";
 
 function Navbar() {
   const router = useRouter()
+
+  // Avoid hydration mismatch by deferring auth-dependent UI until after mount
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
   const isAuthenticated = authStore.isAuth;
 
   return (
@@ -35,14 +41,14 @@ function Navbar() {
                 Osmon
               </span>
           </Link>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4" suppressHydrationWarning>
             <Link href="/cart" className="relative text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400">
               <ShoppingCart className="w-6 h-6" />
               <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
                 0
               </span>
             </Link>
-            {
+            {mounted ? (
               isAuthenticated ? (
                 <Link
                   href="/profile"
@@ -58,7 +64,10 @@ function Navbar() {
                   <LogIn/>Kirish
                 </Link>
               )
-            }
+            ) : (
+              // Placeholder to keep SSR/first client render identical
+              <div className="w-[112px] h-9 rounded-md bg-gray-100 dark:bg-gray-800" aria-hidden />
+            )}
 
 
           </div>

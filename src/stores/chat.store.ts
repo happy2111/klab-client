@@ -25,6 +25,19 @@ class ChatStore {
     this.removeMessageListener = socketService.onNewMessage(this.handleIncomingMessage);
   }
 
+  private listeners = new Set<() => void>();
+
+  onChange(callback: () => void) {
+    this.listeners.add(callback);
+    return () => this.listeners.delete(callback);
+  }
+
+  private notify() {
+    this.listeners.forEach(cb => cb());
+  }
+
+// Например, в activateChat, sendMessage, handleNewIncomingMessage — в конце:
+
   private handleIncomingMessage = (message: Message) => {
     runInAction(() => {
       if (message.chatId !== this.currentChatId) return;
@@ -40,6 +53,8 @@ class ChatStore {
 
       // Новое входящее сообщение
       this.messages.push(message);
+      this.notify();
+
     });
   };
 
@@ -107,6 +122,9 @@ class ChatStore {
       content: content.trim(),
       tempId,
     });
+
+    this.notify();
+
   }
 
   async activateChat(chatId: string) {
@@ -130,6 +148,9 @@ class ChatStore {
       runInAction(() => {
         this.messages = messages;
       });
+
+      this.notify();
+
     } catch {
       toast.error("Не удалось загрузить сообщения");
     } finally {

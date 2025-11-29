@@ -150,6 +150,7 @@ class AuthStore {
         this.accessToken = null;
         this.user = null; // ← добавь!
         this.removeTokenFromStorage();
+        socketService.connect();
       });
     }
     this.appLoading = false;
