@@ -24,7 +24,7 @@ export const RegisterForm = observer(({ className, ...props }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'CLIENT' | 'SELLER'>('CLIENT');
+  const [role, setRole] = useState('CLIENT');
 
   const router = useRouter();
 
