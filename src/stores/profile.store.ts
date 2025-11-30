@@ -31,7 +31,8 @@ class ProfileStore {
   }
 
   async fetchProfile() {
-    if (this.hasFetched) return;
+    if (this.isLoading || this.hasFetched) return; // ← важно!
+
 
     this.isLoading = true;
     try {

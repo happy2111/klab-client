@@ -8,9 +8,9 @@ export function AppInitializer() {
   useEffect(() => {
     const init = async () => {
       await authStore.init();
-      if (authStore.isAuth) {
-        await profileStore.fetchProfile();
-      }
+      // if (authStore.isAuth) {
+      //   await profileStore.fetchProfile();
+      // }
     };
     init();
   }, []);
