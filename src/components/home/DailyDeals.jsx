@@ -20,12 +20,28 @@ export default function DailyDeals() {
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(1); // SSR-safe default
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Mobil uchun 1 ta, planshet 2 ta, desktop 4 ta ko‘rsatish — compute on client only
+  useEffect(() => {
+    const updateVisible = () => {
+      if (typeof window === 'undefined') return;
+      if (window.innerWidth >= 1024) setVisibleCount(4);
+      else if (window.innerWidth >= 640) setVisibleCount(2);
+      else setVisibleCount(1);
+    };
+    updateVisible();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateVisible);
+      return () => window.removeEventListener('resize', updateVisible);
+    }
   }, []);
 
   const deals = [
@@ -39,9 +55,6 @@ export default function DailyDeals() {
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % deals.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + deals.length) % deals.length);
-
-  // Mobil uchun 1 ta, planshet 2 ta, desktop 4 ta ko‘rsatish
-  const visibleCount = window.innerWidth >= 1024 ? 4 : window.innerWidth >= 640 ? 2 : 1;
 
   return (
     <section className="py-16 bg-gray-50">
