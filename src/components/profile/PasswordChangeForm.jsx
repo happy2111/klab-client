@@ -90,9 +90,9 @@ export const PasswordChangeForm = observer(() => {
           <Button
             type="submit"
             className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-            disabled={profileStore.loading || !passwords.currentPassword || !passwords.newPassword}
+            disabled={profileStore.passwordLoading || !passwords.currentPassword || !passwords.newPassword}
           >
-            {profileStore.loading ? (
+            {profileStore.passwordLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               'Обновить пароль'

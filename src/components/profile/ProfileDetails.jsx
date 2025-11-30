@@ -1,4 +1,3 @@
-// components/profile/ProfileDetails.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -100,10 +99,10 @@ export const ProfileDetails = observer(() => {
       <CardFooter>
         <Button
           onClick={handleSave}
-          disabled={profileStore.isLoading}
+          disabled={profileStore.updateLoading}
           className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
         >
-          {profileStore.isLoading ? (
+          {profileStore.updateLoading ? (
             <>Сохранение...</>
           ) : (
             <>Сохранить изменения</>

@@ -10,10 +10,12 @@ import type {
 
 class ProfileStore {
   profile: UserProfile | null = null;
-  isLoading = false;
+  profileLoading = false;
+  updateLoading = false;
+  passwordLoading = false;
+  hasFetched = false;
 
   private service = new ProfileService();
-  private hasFetched = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -31,63 +33,53 @@ class ProfileStore {
   }
 
   async fetchProfile() {
-    if (this.isLoading || this.hasFetched) return; // ← важно!
+    if (this.profileLoading || this.hasFetched) return;
+    this.profileLoading = true;
 
-
-    this.isLoading = true;
     try {
       const data = await this.service.fetchProfile();
       runInAction(() => {
         this.profile = data;
-        this.hasFetched = true; // mark fetched only on success
-        // Синхронизация с authStore
-        if (authStore.user) {
-          authStore.user = { ...authStore.user, ...data };
-        }
+        this.hasFetched = true;
       });
       return true;
-    } catch (e: any) {
-      runInAction(() => {
-        this.hasFetched = false; // allow retry on failure
-      });
-      this.handleError(e, "Профиль маълумотларини юклаб бўлмади");
+    } catch (e) {
+      this.hasFetched = false;
+      this.handleError(e, "Профиль юкланмади");
       return false;
     } finally {
-      runInAction(() => (this.isLoading = false));
+      this.profileLoading = false;
     }
   }
 
-  async updateProfile(dto: UpdateProfileDto) {
-    this.isLoading = true;
+  async updateProfile(dto) {
+    this.updateLoading = true;
     try {
       const updated = await this.service.updateProfile(dto);
       runInAction(() => {
         this.profile = updated;
-        if (authStore.user) {
-          authStore.user = { ...authStore.user, ...updated };
-        }
       });
-      toast.success("Профиль муваффақиятли янгиланди!");
+      toast.success("Профиль янгиланди!");
       return true;
-    } catch (e: any) {
-      this.handleError(e, "Профилни янгилашда хатолик");
+    } catch (e) {
+      this.handleError(e, "Хато");
       return false;
     } finally {
-      runInAction(() => (this.isLoading = false));
+      this.updateLoading = false;
     }
   }
 
-  async changePassword(dto: ChangePasswordDto) {
-    this.isLoading = true;
+  async changePassword(dto) {
+    this.passwordLoading = true;
     try {
       await this.service.changePassword(dto);
-      toast.success("Пароль муваффақиятли ўзгартирилди!");
+      toast.success("Пароль ўзгартирилди!");
       return true;
-    } catch (e: any) {
-      this.handleError(e, "Жорий пароль нотўғри ёки янги пароль хавфсиз эмас");
+    } catch (e) {
+      this.handleError(e, "Пароль ўзгартиришда хато");
       return false;
     } finally {
-      runInAction(() => (this.isLoading = false));
+      this.passwordLoading = false;
     }
   }
 
