@@ -1,177 +1,169 @@
+function debugLog(...args: any[]) {
+  try {
+    console.log(...args);
+  } catch {}
+
+  try {
+    alert(args.map(a => JSON.stringify(a)).join("\n"));
+  } catch {}
+}
+
 import { makeAutoObservable, runInAction } from "mobx";
 import { AuthService } from "@/services/auth.service";
-import { LoginDto, RegisterDto } from "@/services/schemas/auth.schema";
 import { toast } from "sonner";
-import {socketService} from "@/services/socket.service";
-import {chatStore} from "@/stores/chat.store";
+import { socketService } from "@/services/socket.service";
+import { chatStore } from "@/stores/chat.store";
 
-export interface User {
-  id: string;
-  email: string;
-  role: "ADMIN" | "SELLER" | "CLIENT";
-  createdAt: string;
-  updatedAt: string;
-  phone: string;
-  name: string;
-}
-
-export interface AuthResponse {
-  accessToken: string;
-  user: User;
-}
-
-const ACCESS_TOKEN_KEY = 'access_token';
+const ACCESS_TOKEN_KEY = "access_token";
 
 class AuthStore {
   accessToken: string | null = null;
-  user: User | null = null;
+  user: any = null;
   authLoading = false;
   appLoading = false;
 
-  private service = new AuthService();
-
   private isInitialized = false;
-  // Fallback for environments where localStorage is unavailable (e.g., iOS Safari Private Mode)
   private memoryToken: string | null = null;
+  private service = new AuthService();
 
   constructor() {
     makeAutoObservable(this);
+    debugLog("AuthStore: constructor start");
     this.loadTokenFromStorage();
   }
 
   private saveTokenToStorage(token: string) {
-    if (typeof window === 'undefined') return;
+    debugLog("saveTokenToStorage", token);
     try {
       localStorage.setItem(ACCESS_TOKEN_KEY, token);
-    } catch {
-      // Fallback to in-memory token if localStorage is not available
+    } catch (e) {
+      debugLog("localStorage.setItem FAILED", e);
       this.memoryToken = token;
     }
   }
 
   private loadTokenFromStorage() {
-    if (typeof window === 'undefined') return;
+    debugLog("loadTokenFromStorage START");
     try {
       const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+      debugLog("Token from localStorage:", token);
       this.accessToken = token;
-    } catch {
-      // If localStorage is blocked, use memory token
+    } catch (e) {
+      debugLog("localStorage.getItem FAILED", e);
       this.accessToken = this.memoryToken;
     }
   }
 
   private removeTokenFromStorage() {
-    if (typeof window === 'undefined') {
-      this.memoryToken = null;
-      return;
-    }
+    debugLog("removeTokenFromStorage");
     try {
       localStorage.removeItem(ACCESS_TOKEN_KEY);
-    } catch {
-      // If localStorage is blocked, clear memory fallback
+    } catch (e) {
+      debugLog("localStorage.remove FAILED", e);
       this.memoryToken = null;
     }
-  }
-
-
-  getState() {
-    return this;
   }
 
   get isAuth() {
+    debugLog("isAuth check:", !!this.accessToken);
     return !!this.accessToken;
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: any) {
+    debugLog("login START", dto);
     this.authLoading = true;
+
     try {
       const data = await this.service.login(dto);
+      debugLog("login RESPONSE:", data);
+
       runInAction(() => {
         this.accessToken = data.accessToken;
         this.user = data.user;
         this.saveTokenToStorage(data.accessToken);
         socketService.connect();
       });
-      toast.success("Тизимга кирилди!");
-      return true;
-    } catch {
-      toast.error("Хато: логин ёки пароль нотўғри!");
-      return false;
-    } finally {
-      runInAction(() => (this.authLoading = false));
-    }
-  }
 
-  async register(dto: RegisterDto) {
-    this.authLoading = true;
-    try {
-      const data = await this.service.register(dto);
-      runInAction(() => {
-        this.accessToken = data.accessToken;
-        this.user = data.user;
-        this.saveTokenToStorage(data.accessToken);
-      });
-      toast.success("Рўйхатдан ўтилди!");
       return true;
-    } catch (error: any) {
-      toast.error("Хато: " + (error?.message || "Рўйхатдан ўтиш муваффақиятсиз бўлди!"));
+    } catch (e) {
+      debugLog("login ERROR:", e);
+      toast.error("Login error");
       return false;
     } finally {
-      runInAction(() => (this.authLoading = false));
+      this.authLoading = false;
     }
   }
 
   async refresh() {
+    debugLog("refresh START");
+
     try {
       const data = await this.service.refresh();
+      debugLog("refresh RESPONSE:", data);
+
       runInAction(() => {
         this.accessToken = data.accessToken;
         this.user = data.user;
         this.saveTokenToStorage(data.accessToken);
       });
-      return true;
-    } catch {
-      return false; // интерцептор сам сделает logout
-    }
-  }
 
-  async logout() {
-    this.authLoading = true;
-    try {
-      await this.service.logout();
-    } catch {
-      // ignore
-    } finally {
-      runInAction(() => {
-        this.accessToken = null;
-        this.user = null;
-        this.removeTokenFromStorage();
-        this.authLoading = false;
-        chatStore.destroy();
-        socketService.disconnect();
-      });
-      toast.success("Чиқиш амалга оширилди");
+      return true;
+    } catch (e) {
+      debugLog("refresh ERROR:", e);
+      return false;
     }
   }
 
   async init() {
-    if (this.isInitialized) return;
+    debugLog("init START");
+
+    if (this.isInitialized) {
+      debugLog("init SKIPPED: already initialized");
+      return;
+    }
+
     this.isInitialized = true;
 
-    if (!this.accessToken) return;
+    if (!this.accessToken) {
+      debugLog("init STOP: no accessToken");
+      return;
+    }
 
     this.appLoading = true;
+
     const ok = await this.refresh();
+    debugLog("refresh result:", ok);
+
     if (!ok) {
       runInAction(() => {
+        debugLog("refresh failed → clearing auth");
         this.accessToken = null;
-        this.user = null; // clear user on failed refresh
+        this.user = null;
         this.removeTokenFromStorage();
-        // ensure sockets are disconnected if auth is invalid
         socketService.disconnect();
       });
     }
+
     this.appLoading = false;
+    debugLog("init END");
+  }
+
+  async logout() {
+    debugLog("logout START");
+    try {
+      await this.service.logout();
+    } catch (e) {
+      debugLog("logout service error:", e);
+    }
+
+    runInAction(() => {
+      debugLog("logout → clearing store");
+      this.accessToken = null;
+      this.user = null;
+      this.removeTokenFromStorage();
+      chatStore.destroy();
+      socketService.disconnect();
+    });
   }
 }
 
