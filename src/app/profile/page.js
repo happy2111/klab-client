@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { autorun } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from "next/navigation";
 import { authStore } from "@/stores/auth.store";
@@ -15,17 +16,21 @@ const ProfilePageContent = observer(() => {
   const router = useRouter();
 
   useEffect(() => {
-    // Wait for auth initialization
-    if (authStore.appLoading) return;
+    const dispose = autorun(() => {
+      // Wait for auth initialization
+      if (authStore.appLoading) return;
 
-    if (!authStore.isAuth) {
-      router.replace('/login');
-      return;
-    }
-    if (!profileStore.profile && !profileStore.isLoading) {
-      profileStore.fetchProfile();
-    }
-  }, [authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.isLoading, router]);
+      if (!authStore.isAuth) {
+        router.replace('/login');
+        return;
+      }
+      if (!profileStore.profile && !profileStore.isLoading) {
+        profileStore.fetchProfile();
+      }
+    });
+
+    return () => dispose();
+  }, [router]);
 
   if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.isLoading)) {
     return (

@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { observer } from 'mobx-react-lite';
+import { autorun } from 'mobx';
 import { authStore } from '@/stores/auth.store';
 import { profileStore } from '@/stores/profile.store';
 import { chatStore } from '@/stores/chat.store';
@@ -26,25 +27,29 @@ function ChatPage() {
   }, []);
 
   useEffect(() => {
-    // Wait until auth initialization completes
-    if (authStore.appLoading) return;
+    const dispose = autorun(() => {
+      // Wait until auth initialization completes
+      if (authStore.appLoading) return;
 
-    if (!authStore.isAuth) {
-      router.replace('/login');
-      return;
-    }
+      if (!authStore.isAuth) {
+        router.replace('/login');
+        return;
+      }
 
-    if (!profileStore.profile && !profileStore.isLoading) {
-      profileStore.fetchProfile();
-    }
-    chatStore.fetchChats();
-    socketService.connect();
-  }, [router, authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.isLoading]);
+      if (!profileStore.profile && !profileStore.isLoading) {
+        profileStore.fetchProfile();
+      }
+      chatStore.fetchChats();
+      socketService.connect();
+    });
+
+    return () => dispose();
+  }, [router]);
 
   // Loading states: wait for auth init and profile
   if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.isLoading)) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
+      <div className="min-h-screen bg-zinc-50 dark:bg-black py-4 px-4 ">
         <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
       </div>
     );

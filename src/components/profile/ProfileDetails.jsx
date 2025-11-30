@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
+import { autorun } from 'mobx';
 import { profileStore } from '@/stores/profile.store';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,14 +18,17 @@ export const ProfileDetails = observer(() => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
 
   useEffect(() => {
-    if (profileStore.profile) {
-      setFormData({
-        name: profileStore.profile.name || '',
-        email: profileStore.profile.email || '',
-        phone: profileStore.profile.phone || '',
-      });
-    }
-  }, [profileStore.profile]);
+    const dispose = autorun(() => {
+      if (profileStore.profile) {
+        setFormData({
+          name: profileStore.profile.name || '',
+          email: profileStore.profile.email || '',
+          phone: profileStore.profile.phone || '',
+        });
+      }
+    });
+    return () => dispose();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
