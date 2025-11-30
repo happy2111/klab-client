@@ -1,8 +1,8 @@
+// components/profile/ProfileDetails.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { autorun } from 'mobx';
 import { profileStore } from '@/stores/profile.store';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,17 +17,14 @@ export const ProfileDetails = observer(() => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
 
   useEffect(() => {
-    const dispose = autorun(() => {
-      if (profileStore.profile) {
-        setFormData({
-          name: profileStore.profile.name || '',
-          email: profileStore.profile.email || '',
-          phone: profileStore.profile.phone || '',
-        });
-      }
-    });
-    return () => dispose();
-  }, []);
+    if (profileStore.profile) {
+      setFormData({
+        name: profileStore.profile.name || '',
+        email: profileStore.profile.email || '',
+        phone: profileStore.profile.phone || '',
+      });
+    }
+  }, [profileStore.profile]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -99,10 +96,10 @@ export const ProfileDetails = observer(() => {
       <CardFooter>
         <Button
           onClick={handleSave}
-          disabled={profileStore.updateLoading}
+          disabled={profileStore.isLoading}
           className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
         >
-          {profileStore.updateLoading ? (
+          {profileStore.isLoading ? (
             <>Сохранение...</>
           ) : (
             <>Сохранить изменения</>

@@ -4,7 +4,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { observer } from 'mobx-react-lite';
-import { autorun } from 'mobx';
 import { authStore } from '@/stores/auth.store';
 import { profileStore } from '@/stores/profile.store';
 import { chatStore } from '@/stores/chat.store';
@@ -27,24 +26,20 @@ function ChatPage() {
   }, []);
 
   useEffect(() => {
-    const dispose = autorun(() => {
-      // Wait until auth initialization completes
-      if (authStore.appLoading) return;
+    // Wait until auth initialization completes
+    if (authStore.appLoading) return;
 
-      if (!authStore.isAuth) {
-        router.replace('/login');
-        return;
-      }
+    if (!authStore.isAuth) {
+      router.replace('/login');
+      return;
+    }
 
-      if (!profileStore.profile && !profileStore.isLoading) {
-        profileStore.fetchProfile();
-      }
-      chatStore.fetchChats();
-      socketService.connect();
-    });
-
-    return () => dispose();
-  }, [router]);
+    if (!profileStore.profile && !profileStore.isLoading) {
+      profileStore.fetchProfile();
+    }
+    chatStore.fetchChats();
+    socketService.connect();
+  }, [router, authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.isLoading]);
 
   // Loading states: wait for auth init and profile
   if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.isLoading)) {

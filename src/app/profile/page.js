@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { autorun } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from "next/navigation";
 import { authStore } from "@/stores/auth.store";
@@ -16,23 +15,19 @@ const ProfilePageContent = observer(() => {
   const router = useRouter();
 
   useEffect(() => {
-    const dispose = autorun(() => {
-      // Wait for auth initialization
-      if (authStore.appLoading) return;
+    // Wait for auth initialization
+    if (authStore.appLoading) return;
 
-      if (!authStore.isAuth) {
-        router.replace('/login');
-        return;
-      }
-      if (!profileStore.profile && !profileStore.isLoading) {
-        profileStore.fetchProfile();
-      }
-    });
+    if (!authStore.isAuth) {
+      router.replace('/login');
+      return;
+    }
+    if (!profileStore.profile && !profileStore.isLoading) {
+      profileStore.fetchProfile();
+    }
+  }, [authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.isLoading, router]);
 
-    return () => dispose();
-  }, [router]);
-
-  if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.profileLoading)) {
+  if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.isLoading)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
