@@ -31,6 +31,8 @@ class AuthStore {
   private service = new AuthService();
 
   private isInitialized = false;
+  // Fallback for environments where localStorage is unavailable (e.g., iOS Safari Private Mode)
+  private memoryToken: string | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -38,21 +40,36 @@ class AuthStore {
   }
 
   private saveTokenToStorage(token: string) {
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') return;
+    try {
       localStorage.setItem(ACCESS_TOKEN_KEY, token);
+    } catch {
+      // Fallback to in-memory token if localStorage is not available
+      this.memoryToken = token;
     }
   }
 
   private loadTokenFromStorage() {
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') return;
+    try {
       const token = localStorage.getItem(ACCESS_TOKEN_KEY);
       this.accessToken = token;
+    } catch {
+      // If localStorage is blocked, use memory token
+      this.accessToken = this.memoryToken;
     }
   }
 
   private removeTokenFromStorage() {
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') {
+      this.memoryToken = null;
+      return;
+    }
+    try {
       localStorage.removeItem(ACCESS_TOKEN_KEY);
+    } catch {
+      // If localStorage is blocked, clear memory fallback
+      this.memoryToken = null;
     }
   }
 
@@ -148,9 +165,10 @@ class AuthStore {
     if (!ok) {
       runInAction(() => {
         this.accessToken = null;
-        this.user = null; // ← добавь!
+        this.user = null; // clear user on failed refresh
         this.removeTokenFromStorage();
-        socketService.connect();
+        // ensure sockets are disconnected if auth is invalid
+        socketService.disconnect();
       });
     }
     this.appLoading = false;
