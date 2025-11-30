@@ -22,12 +22,12 @@ const ProfilePageContent = observer(() => {
       router.replace('/login');
       return;
     }
-    if (!profileStore.profile && !profileStore.isLoading) {
+    if (!profileStore.profile && !profileStore.profileLoading) {
       profileStore.fetchProfile();
     }
-  }, [authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.isLoading, router]);
+  }, [authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.profileLoading, router]);
 
-  if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.isLoading)) {
+  if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.profileLoading)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-blue-600" />

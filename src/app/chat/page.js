@@ -34,15 +34,15 @@ function ChatPage() {
       return;
     }
 
-    if (!profileStore.profile && !profileStore.isLoading) {
+    if (!profileStore.profile && !profileStore.profileLoading) {
       profileStore.fetchProfile();
     }
     chatStore.fetchChats();
     socketService.connect();
-  }, [router, authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.isLoading]);
+  }, [router, authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.profileLoading]);
 
   // Loading states: wait for auth init and profile
-  if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.isLoading)) {
+  if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.profileLoading)) {
     return (
       <div className="min-h-screen bg-zinc-50 dark:bg-black py-4 px-4 ">
         <Loader2 className="h-12 w-12 animate-spin text-blue-600" />

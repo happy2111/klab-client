@@ -38,13 +38,6 @@ export const ProfileDetails = observer(() => {
     }
   };
 
-  if (!profileStore.profile && profileStore.isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
-      </div>
-    );
-  }
 
   if (!profileStore.profile) {
     return <p className="text-center text-red-500">Профиль не найден</p>;
@@ -96,10 +89,10 @@ export const ProfileDetails = observer(() => {
       <CardFooter>
         <Button
           onClick={handleSave}
-          disabled={profileStore.isLoading}
+          disabled={profileStore.updateLoading}
           className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
         >
-          {profileStore.isLoading ? (
+          {profileStore.updateLoading ? (
             <>Сохранение...</>
           ) : (
             <>Сохранить изменения</>
