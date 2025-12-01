@@ -1,4 +1,3 @@
-// app/chat/page.tsx
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -35,7 +34,7 @@ function ChatPage() {
     }
 
     if (!profileStore.profile && !profileStore.profileLoading) {
-      profileStore.fetchProfile();
+      // profileStore.fetchProfile();
     }
     chatStore.fetchChats();
     socketService.connect();

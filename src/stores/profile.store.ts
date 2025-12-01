@@ -17,12 +17,12 @@ class ProfileStore {
     makeAutoObservable(this);
   }
 
-  private log(...args) {
+  private log(...args: any) {
     console.log("%c[ProfileStore]", "color:#4F46E5; font-weight:bold;", ...args);
     alert(args.map(a => JSON.stringify(a)).join("\n"));
   }
 
-  private handleError(error, defaultMessage) {
+  private handleError(error: any, defaultMessage: any) {
     const msg = error?.response?.data?.message;
     if (typeof msg === "string") {
       toast.error(msg);

@@ -15,16 +15,18 @@ const ProfilePageContent = observer(() => {
   const router = useRouter();
 
   useEffect(() => {
-    // Wait for auth initialization
     if (authStore.appLoading) return;
 
     if (!authStore.isAuth) {
       router.replace('/login');
       return;
     }
+
+
     if (!profileStore.profile && !profileStore.profileLoading) {
       profileStore.fetchProfile();
     }
+
   }, [authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.profileLoading, router]);
 
   if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.profileLoading)) {
