@@ -6,14 +6,14 @@ import { cartStore } from "@/stores/сart.store";
 import { ProductCard } from "@/components/product/ProductCard";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { chatStore } from "@/stores/chat.store";
+import { chatStore } from "@/stores/chat2.store";
 
 function ProductList() {
   const router = useRouter();
 
   const handleChatClick = (sellerId) => {
-    chatStore.openChat(sellerId);
-    router.push('/chat');
+    chatStore.createAndOpenChat(sellerId);
+    router.push('/chat-v2');
   };
 
   const handleAddToCart = (productData) => {
@@ -46,8 +46,6 @@ function ProductList() {
           seller={p.seller}
           onClick={() => router.push('/cart')}
           onChat={handleChatClick}
-
-          // ✅ 3. Передаем обработчик в пропс onAddToCart
           onAddToCart={handleAddToCart}
         />
       ))}

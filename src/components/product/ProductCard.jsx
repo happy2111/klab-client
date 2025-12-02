@@ -41,7 +41,7 @@ export const ProductCard = observer(({
         {photo ? (
           <img
             // Исправлена проблема с корневым путем, если он был
-            src={process.env.NEXT_PUBLIC_API_URL + photo} // Использование переменной окружения
+            src={process.env.NEXT_PUBLIC_API_URL +"/" + photo} // Использование переменной окружения
             alt={name}
             className="object-cover w-full h-full"
           />

@@ -47,7 +47,6 @@ function Navbar() {
       <div className="container relative">
         <div className="flex justify-between py-4 items-center">
 
-          {/* 1. Скрытые элементы (Каталог, Чат, ThemChanger) - видны только на десктопе */}
           <div className={`flex-shrink-0 gap-2 ${hiddenOnMobile}`}>
             <ModeToggle />
             <Button onClick={() => router.push('/chat')} >
@@ -59,7 +58,7 @@ function Navbar() {
           </div>
 
           {/* 2. Логотип (Центр) */}
-          <Link href="/" className="sm:absolute left-1/2 sm:-translate-x-1/2">
+          <Link href="/" className="md:absolute left-1/2 md:-translate-x-1/2">
             <div className="flex items-center gap-3">
               <img
                 src="/images/icon.png"

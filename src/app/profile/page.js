@@ -27,7 +27,7 @@ const ProfilePageContent = observer(() => {
       profileStore.fetchProfile();
     }
 
-  }, [authStore.appLoading, authStore.isAuth, profileStore.profile, profileStore.profileLoading, router]);
+  }, [authStore.appLoading, authStore.isAuth, profileStore.profile, router]);
 
   if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.profileLoading)) {
     return (

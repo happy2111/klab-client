@@ -95,6 +95,26 @@ class AuthStore {
     }
   }
 
+  async register(dto: any) {
+    debugLog("register START", dto);
+    this.authLoading = true;
+    try {
+      const data = await this.service.register(dto);
+      debugLog("register RESPONSE:", data);
+      runInAction(() => {
+        this.accessToken = data.accessToken;
+        this.user = data.user;
+        this.saveTokenToStorage(data.accessToken);
+        socketService.connect();
+      });
+      return true;
+    } catch (e) {
+      debugLog("register ERROR:", e);
+      toast.error("Register error");
+      return false;
+    }
+  }
+
   async refresh() {
     debugLog("refresh START");
 

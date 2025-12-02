@@ -32,8 +32,9 @@ export const RegisterForm = observer(({ className, ...props }) => {
     e.preventDefault();
 
     try {
-      const dto = registerSchema.parse({ name, email, password, role });
+      const dto = registerSchema.parse({ name, email, password, role: (role || 'CLIENT').toUpperCase() });
 
+      alert(dto.role)
       const success = await authStore.register(dto);
 
       if (success) {
