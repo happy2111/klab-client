@@ -1,6 +1,8 @@
 import { io, Socket } from "socket.io-client";
 import { authStore } from "@/stores/auth.store";
 import { chatStore } from "@/stores/chat2.store";
+import process
+  from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 class SocketService {
   private socket: Socket | null = null;
@@ -12,7 +14,7 @@ class SocketService {
     const token = authStore.accessToken;
     if (!token) return;
 
-    const baseUrl = "http://localhost:5000";
+    const baseUrl =  "https://klab-server.onrender.com";
     this.socket = io(`${baseUrl}/chat`, {
       auth: { token },
       transports: ["websocket"],

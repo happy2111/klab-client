@@ -47,10 +47,14 @@ class AuthStore {
     try {
       const token = localStorage.getItem(ACCESS_TOKEN_KEY);
       debugLog("Token from localStorage:", token);
-      this.accessToken = token;
+      runInAction(() => {
+        this.accessToken = token;
+      });
     } catch (e) {
       debugLog("localStorage.getItem FAILED", e);
-      this.accessToken = this.memoryToken;
+      runInAction(() => {
+        this.accessToken = this.memoryToken;
+      });
     }
   }
 
@@ -71,7 +75,9 @@ class AuthStore {
 
   async login(dto: any) {
     debugLog("login START", dto);
-    this.authLoading = true;
+    runInAction(() => {
+      this.authLoading = true;
+    });
 
     try {
       const data = await this.service.login(dto);
@@ -90,14 +96,17 @@ class AuthStore {
       toast.error("Login error");
       return false;
     } finally {
-      this.authLoading = false;
-
+      runInAction(() => {
+        this.authLoading = false;
+      });
     }
   }
 
   async register(dto: any) {
     debugLog("register START", dto);
-    this.authLoading = true;
+    runInAction(() => {
+      this.authLoading = true;
+    });
     try {
       const data = await this.service.register(dto);
       debugLog("register RESPONSE:", data);
@@ -112,6 +121,10 @@ class AuthStore {
       debugLog("register ERROR:", e);
       toast.error("Register error");
       return false;
+    } finally {
+      runInAction(() => {
+        this.authLoading = false;
+      });
     }
   }
 
@@ -143,14 +156,18 @@ class AuthStore {
       return;
     }
 
-    this.isInitialized = true;
+    runInAction(() => {
+      this.isInitialized = true;
+    });
 
     if (!this.accessToken) {
       debugLog("init STOP: no accessToken");
       return;
     }
 
-    this.appLoading = true;
+    runInAction(() => {
+      this.appLoading = true;
+    });
 
     const ok = await this.refresh();
     debugLog("refresh result:", ok);
@@ -161,11 +178,13 @@ class AuthStore {
         this.accessToken = null;
         this.user = null;
         this.removeTokenFromStorage();
-        socketService.disconnect();
+        // socketService.disconnect();
       });
     }
+    runInAction(() => {
+      this.appLoading = false;
+    })
 
-    this.appLoading = false;
     debugLog("init END");
   }
 

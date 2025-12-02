@@ -46,8 +46,10 @@ class ProfileStore {
       return;
     }
 
-    this.profileLoading = true;
-    this.log("profileLoading = true");
+    runInAction(() => {
+      this.profileLoading = true;
+    })
+      this.log("profileLoading = true");
 
     try {
       const data = await this.service.fetchProfile();
@@ -62,20 +64,27 @@ class ProfileStore {
     } catch (e) {
       this.log("fetchProfile() error:", e);
 
-      this.hasFetched = false;
-      this.handleError(e, "Профиль юкланмади");
+      runInAction(() => {
+        this.hasFetched = false;
+        this.handleError(e, "Профиль юкланмади");
+      })
+
       return false;
     } finally {
-      this.profileLoading = false;
-      this.log("profileLoading = false (finally)");
+      runInAction(() => {
+        this.profileLoading = false;
+        this.log("profileLoading = false (finally)");
+      })
     }
   }
 
   async updateProfile(dto) {
     this.log("updateProfile() called:", dto);
 
-    this.updateLoading = true;
-    this.log("updateLoading = true");
+    runInAction(() => {
+      this.updateLoading = true;
+      this.log("updateLoading = true");
+    })
 
     try {
       const updated = await this.service.updateProfile(dto);
