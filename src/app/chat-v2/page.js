@@ -48,76 +48,76 @@ const ChatPage = observer(() => {
     chatStore.startTyping();
   };
 
-  // Если нет текущего чата — показываем список
+  // Список чатов
   if (!chatStore.currentChat) {
     return (
-      <div className="flex h-screen bg-gray-50">
-        <div className="container mx-auto flex flex-col">
-          <div className="p-6 border-b ">
+      <div className="flex h-screen flex-col bg-background">
+        <div className="border-b bg-card">
+          <div className="container mx-auto p-6">
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <MessageCircle className="w-8 h-8" />
               Мои чаты
             </h1>
           </div>
+        </div>
 
-          <ScrollArea className="flex-1">
-            <div className="p-4 space-y-3">
-              {chatStore.loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <Card key={i} className="p-4">
-                    <Skeleton className="h-6 w-48 mb-2" />
-                    <Skeleton className="h-4 w-32" />
-                  </Card>
-                ))
-              ) : chatStore.chats.length === 0 ? (
-                <div className="text-center py-20 text-gray-500">
-                  <Users className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                  <p>У вас пока нет чатов</p>
-                  <p className="text-sm">Начните общение с продавцом!</p>
-                </div>
-              ) : (
-                chatStore.chats.map((chat, i) => {
-                  const interlocutor = chatStore.interlocutorFromChat(chat);
-                  const lastMessage = chat.messages?.[0];
+        <ScrollArea className="flex-1 container">
+          <div className="p-4 space-y-3">
+            {chatStore.loading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <Card key={i} className="p-4">
+                  <Skeleton className="h-6 w-48 mb-2" />
+                  <Skeleton className="h-4 w-32" />
+                </Card>
+              ))
+            ) : chatStore.chats.length === 0 ? (
+              <div className="text-center py-20 text-muted-foreground">
+                <Users className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                <p className="text-lg">У вас пока нет чатов</p>
+                <p className="text-sm">Начните общение с продавцом!</p>
+              </div>
+            ) : (
+              chatStore.chats.map((chat, i) => {
+                const interlocutor = chatStore.interlocutorFromChat(chat);
+                const lastMessage = chat.messages?.[0];
 
-                  return (
-                    <Card
-                      key={`${chat.id}-${i}`}
-                      className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                      onClick={() => chatStore.openChat(chat.id)}
-                    >
-                      <div className="flex items-center gap-4">
-                        <Avatar>
-                          <AvatarFallback>
-                            {interlocutor?.name?.[0] || "U"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">
-                            {interlocutor?.name || "Без имени"}
-                          </p>
-                          {lastMessage && (
-                            <p className="text-sm text-gray-500 truncate">
-                              {lastMessage.senderId === authStore.user?.id
-                                ? "Вы: "
-                                : ""}
-                              {lastMessage.content}
-                            </p>
-                          )}
-                        </div>
+                return (
+                  <Card
+                    key={`${chat.id}-${i}`}
+                    className="p-4 hover:bg-accent/50 cursor-pointer transition-colors"
+                    onClick={() => chatStore.openChat(chat.id)}
+                  >
+                    <div className="flex items-center gap-4">
+                      <Avatar>
+                        <AvatarFallback>
+                          {interlocutor?.name?.[0] || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">
+                          {interlocutor?.name || "Без имени"}
+                        </p>
                         {lastMessage && (
-                          <span className="text-xs text-gray-400">
-                            {format(new Date(lastMessage.createdAt), "HH:mm")}
-                          </span>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {lastMessage.senderId === authStore.user?.id
+                              ? "Вы: "
+                              : ""}
+                            {lastMessage.content}
+                          </p>
                         )}
                       </div>
-                    </Card>
-                  );
-                })
-              )}
-            </div>
-          </ScrollArea>
-        </div>
+                      {lastMessage && (
+                        <span className="text-xs text-muted-foreground">
+                          {format(new Date(lastMessage.createdAt), "HH:mm")}
+                        </span>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })
+            )}
+          </div>
+        </ScrollArea>
       </div>
     );
   }
@@ -125,10 +125,10 @@ const ChatPage = observer(() => {
   const interlocutor = chatStore.interlocutor;
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b sticky  top-17 z-10">
-        <div className="flex items-center justify-between py-2 gap-3 container">
+      <div className="border-b bg-card sticky top-17 z-10">
+        <div className="container mx-auto flex items-center justify-between py-3 gap-4">
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarFallback>{interlocutor?.name?.[0] || "U"}</AvatarFallback>
@@ -139,10 +139,10 @@ const ChatPage = observer(() => {
                 {chatStore.isInterlocutorOnline ? (
                   <>
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-green-600">Онлайн</span>
+                    <span className="text-green-600 dark:text-green-400">Онлайн</span>
                   </>
                 ) : (
-                  <span className="text-gray-500">Оффлайн</span>
+                  <span className="text-muted-foreground">Оффлайн</span>
                 )}
               </div>
             </div>
@@ -155,7 +155,7 @@ const ChatPage = observer(() => {
 
       {/* Messages */}
       <ScrollArea className="flex-1 px-4 py-6">
-        <div className="container space-y-4">
+        <div className="container space-y-4 max-w-4xl mx-auto">
           {chatStore.loading ? (
             <div className="space-y-4">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -178,8 +178,8 @@ const ChatPage = observer(() => {
                   <div
                     className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
                       isMine
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-900"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-foreground"
                     }`}
                   >
                     {!isMine && (
@@ -188,11 +188,7 @@ const ChatPage = observer(() => {
                       </p>
                     )}
                     <p className="break-words">{msg.content}</p>
-                    <p
-                      className={`text-xs mt-1 ${
-                        isMine ? "text-blue-200" : "text-gray-500"
-                      }`}
-                    >
+                    <p className="text-xs mt-1 opacity-70">
                       {format(new Date(msg.createdAt), "HH:mm", { locale: ru })}
                     </p>
                   </div>
@@ -204,8 +200,10 @@ const ChatPage = observer(() => {
           {/* Typing indicator */}
           {chatStore.typingText && (
             <div className="flex justify-start">
-              <div className="bg-gray-200 px-4 py-3 rounded-2xl text-sm text-gray-600">
-                {chatStore.typingText}
+              <div className="bg-muted px-4 py-3 rounded-2xl text-sm">
+                <span className="text-muted-foreground">
+                  {chatStore.typingText}
+                </span>
                 <span className="inline-block ml-1 animate-pulse">...</span>
               </div>
             </div>
@@ -216,8 +214,8 @@ const ChatPage = observer(() => {
       </ScrollArea>
 
       {/* Input */}
-      <div className="border-t bg-white p-4 sticky bottom-0">
-        <div className="max-w-4xl mx-auto flex gap-2">
+      <div className="border-t bg-card p-4 sticky bottom-0">
+        <div className="container mx-auto max-w-4xl flex gap-2">
           <Input
             ref={inputRef}
             value={message}

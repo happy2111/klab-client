@@ -129,7 +129,7 @@ function Navbar() {
             {/* Чат */}
             <Button
               className="w-full justify-start gap-2"
-              onClick={() => handleMobileNav('/chat')}
+              onClick={() => handleMobileNav('/chat-v2')}
             >
               <MessageSquareShare className="h-[1.2rem] w-[1.2rem]" />
               Чат
