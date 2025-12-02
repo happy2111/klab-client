@@ -31,7 +31,7 @@ function ProductList() {
     return <p className="text-center text-lg text-gray-500">Hozircha mahsulotlar yo‘q</p>;
 
   return (
-    <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 md:grid-cols-3 gap-6 mx-auto">
+    <div className="grid grid-cols-1 place-items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mx-auto">
       {productStore.products.map(p => (
         <ProductCard
           key={p.id}

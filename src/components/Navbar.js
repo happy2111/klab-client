@@ -27,14 +27,10 @@ function Navbar() {
 
   const isAuthenticated = authStore.isAuth;
 
-  // Функция для переключения состояния меню
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // Класс для адаптивного скрытия/показа элементов в основном Navbar
-  // 'hidden lg:flex' - скрыт на моб., показан на десктопе
   const hiddenOnMobile = 'hidden lg:flex';
 
-  // Обработчик для навигации из мобильного меню
   const handleMobileNav = (path) => {
     router.push(path);
     setIsMenuOpen(false); // Закрыть меню после клика
@@ -43,13 +39,13 @@ function Navbar() {
   const itemCount = cartStore.itemCount;
 
   return (
-    <nav className="bg-white mb-8 dark:bg-black shadow-md z-50 sticky top-0">
+    <nav className="bg-white dark:bg-black shadow-md z-50 sticky top-0">
       <div className="container relative">
         <div className="flex justify-between py-4 items-center">
 
           <div className={`flex-shrink-0 gap-2 ${hiddenOnMobile}`}>
             <ModeToggle />
-            <Button onClick={() => router.push('/chat')} >
+            <Button onClick={() => router.push('/chat-v2')} >
               <MessageSquareShare className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all "/>Chat
             </Button>
             <Button className="bg-primary/30 text-primary hover:bg-primary/40 border border-primary" onClick={() => router.push('/catalog')} >
@@ -57,7 +53,6 @@ function Navbar() {
             </Button>
           </div>
 
-          {/* 2. Логотип (Центр) */}
           <Link href="/" className="md:absolute left-1/2 md:-translate-x-1/2">
             <div className="flex items-center gap-3">
               <img
@@ -69,7 +64,6 @@ function Navbar() {
             </div>
           </Link>
 
-          {/* 3. Элементы справа (Корзина, Профиль/Логин) и Бургер */}
           <div className="flex items-center space-x-4">
             <Link
               href="/cart"

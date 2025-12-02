@@ -3,6 +3,7 @@ import {ThemeProvider} from "@/components/theme-provider";
 import Navbar from "@/components/Navbar";
 import {Toaster} from "@/components/ui/sonner";
 import {AppInitializer} from "@/app/init";
+import Footer from "@/components/home/Footer";
 
 
 export const metadata = {
@@ -27,6 +28,7 @@ export default function RootLayout({children}) {
         <Navbar/>
         {children}
         <Toaster />
+        <Footer />
       </ThemeProvider>
     </body>
     </html>
