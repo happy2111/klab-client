@@ -29,7 +29,7 @@ const ProfilePageContent = observer(() => {
 
   }, [authStore.appLoading, authStore.isAuth, profileStore.profile, router]);
 
-  if (authStore.appLoading || !authStore.isAuth || (!profileStore.profile && profileStore.profileLoading)) {
+  if (authStore.appLoading || (!profileStore.profile && profileStore.profileLoading)) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-blue-600" />

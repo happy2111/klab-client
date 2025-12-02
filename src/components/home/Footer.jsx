@@ -1,6 +1,13 @@
-// src/components/Footer.jsx   ← shuni to‘liq nusxala-yopishtiring
+'use client'
+import {usePathname} from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  const hide = pathname.startsWith('/chat');
+
+  if (hide) return null;
+
   return (
     <footer className="bg-gray-100 pt-16 pb-8 mt-10">
       <div className="max-w-7xl mx-auto px-6">

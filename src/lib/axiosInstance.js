@@ -63,21 +63,27 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config || {};
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Не пытаемся рефрешить, если запросившийся маршрут — это сам /auth/refresh
+    const isRefreshCall = originalRequest?.url === "/auth/refresh";
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isRefreshCall) {
       originalRequest._retry = true;
 
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedRequestsQueue.push({ resolve, reject });
-        }).then(() => api(originalRequest)).catch(err => Promise.reject(err));
+        })
+          .then(() => api(originalRequest))
+          .catch(err => Promise.reject(err));
       }
 
       isRefreshing = true;
 
       try {
-        await authStore.refresh(); // обновляет токен в сторе
+        const ok = await authStore.refresh(); // обновляет токен в сторе
+        if (!ok) throw new Error("Refresh failed");
 
         failedRequestsQueue.forEach(p => p.resolve());
         failedRequestsQueue = [];
@@ -96,7 +102,7 @@ api.interceptors.response.use(
     // Показывать ошибки только если это не 401
     if (error.response?.status !== 401) {
       const msg = toErrorMessage(error.response?.data);
-      if (originalRequest?.url !== "/auth/refresh") {
+      if (!isRefreshCall) {
         toast.error(msg);
       }
     }

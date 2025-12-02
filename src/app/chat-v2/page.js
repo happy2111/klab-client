@@ -52,8 +52,8 @@ const ChatPage = observer(() => {
   if (!chatStore.currentChat) {
     return (
       <div className="flex h-screen bg-gray-50">
-        <div className="w-full max-w-4xl mx-auto flex flex-col">
-          <div className="p-6 border-b bg-white">
+        <div className="container mx-auto flex flex-col">
+          <div className="p-6 border-b ">
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <MessageCircle className="w-8 h-8" />
               Мои чаты
@@ -127,33 +127,35 @@ const ChatPage = observer(() => {
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4 flex items-center justify-between sticky top-14 z-10">
-        <div className="flex items-center gap-3">
-          <Avatar>
-            <AvatarFallback>{interlocutor?.name?.[0] || "U"}</AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-semibold">{interlocutor?.name || "Пользователь"}</p>
-            <div className="flex items-center gap-2 text-sm">
-              {chatStore.isInterlocutorOnline ? (
-                <>
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-green-600">Онлайн</span>
-                </>
-              ) : (
-                <span className="text-gray-500">Оффлайн</span>
-              )}
+      <div className="bg-white border-b sticky  top-17 z-10">
+        <div className="flex items-center justify-between py-2 gap-3 container">
+          <div className="flex items-center gap-3">
+            <Avatar>
+              <AvatarFallback>{interlocutor?.name?.[0] || "U"}</AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="font-semibold">{interlocutor?.name || "Пользователь"}</p>
+              <div className="flex items-center gap-2 text-sm">
+                {chatStore.isInterlocutorOnline ? (
+                  <>
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-green-600">Онлайн</span>
+                  </>
+                ) : (
+                  <span className="text-gray-500">Оффлайн</span>
+                )}
+              </div>
             </div>
           </div>
+          <Button variant="ghost" size="sm" onClick={() => chatStore.leaveCurrentChat()}>
+            ← Назад
+          </Button>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => chatStore.leaveCurrentChat()}>
-          ← Назад
-        </Button>
       </div>
 
       {/* Messages */}
       <ScrollArea className="flex-1 px-4 py-6">
-        <div className="max-w-4xl mx-auto space-y-4">
+        <div className="container space-y-4">
           {chatStore.loading ? (
             <div className="space-y-4">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -214,7 +216,7 @@ const ChatPage = observer(() => {
       </ScrollArea>
 
       {/* Input */}
-      <div className="border-t bg-white p-4">
+      <div className="border-t bg-white p-4 sticky bottom-0">
         <div className="max-w-4xl mx-auto flex gap-2">
           <Input
             ref={inputRef}

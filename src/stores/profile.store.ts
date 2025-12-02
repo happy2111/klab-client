@@ -19,7 +19,7 @@ class ProfileStore {
 
   private log(...args: any) {
     console.log("%c[ProfileStore]", "color:#4F46E5; font-weight:bold;", ...args);
-    alert(args.map(a => JSON.stringify(a)).join("\n"));
+    // alert(args.map(a => JSON.stringify(a)).join("\n"));
   }
 
   private handleError(error: any, defaultMessage: any) {
