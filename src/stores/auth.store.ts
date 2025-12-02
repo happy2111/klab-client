@@ -4,7 +4,7 @@ function debugLog(...args: any[]) {
   } catch {}
 
   try {
-    alert(args.map(a => JSON.stringify(a)).join("\n"));
+    // alert(args.map(a => JSON.stringify(a)).join("\n"));
   } catch {}
 }
 
@@ -91,6 +91,7 @@ class AuthStore {
       return false;
     } finally {
       this.authLoading = false;
+
     }
   }
 

@@ -1,28 +1,28 @@
 "use client";
 
-
 import { observer } from "mobx-react-lite";
 import { productStore } from "@/stores/product.store";
-import {ProductCard} from "@/components/product/ProductCard";
-import {useEffect} from "react";
-import {useRouter} from "next/navigation";
-import {chatStore} from "@/stores/chat.store";
+import { cartStore } from "@/stores/сart.store";
+import { ProductCard } from "@/components/product/ProductCard";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { chatStore } from "@/stores/chat.store";
 
 function ProductList() {
   const router = useRouter();
 
-  // Функция для открытия чата
   const handleChatClick = (sellerId) => {
-    // 1. Открываем чат в MobX Store (создание/загрузка)
     chatStore.openChat(sellerId);
-    // 2. Перенаправляем пользователя на страницу чатов
     router.push('/chat');
+  };
+
+  const handleAddToCart = (productData) => {
+    cartStore.addToCart(productData);
   };
 
   useEffect(() => {
     productStore.getAll();
   }, []);
-
 
   if (productStore.loading)
     return <p className="text-center text-xl text-blue-600">Yuklanmoqda...</p>;
@@ -39,11 +39,16 @@ function ProductList() {
           name={p.name}
           description={p.description}
           price={p.price}
+          // Предполагаем, что p.photo может быть undefined,
+          // и это обработано в CartStore/ProductCard.
           photo={p.photo}
           category={p.category?.name}
           seller={p.seller}
-          onClick={() => console.log("Buy:", p.id)}
+          onClick={() => router.push('/cart')}
           onChat={handleChatClick}
+
+          // ✅ 3. Передаем обработчик в пропс onAddToCart
+          onAddToCart={handleAddToCart}
         />
       ))}
     </div>

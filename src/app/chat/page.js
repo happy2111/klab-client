@@ -34,7 +34,7 @@ function ChatPage() {
     }
 
     if (!profileStore.profile && !profileStore.profileLoading) {
-      // profileStore.fetchProfile();
+      profileStore.fetchProfile();
     }
     chatStore.fetchChats();
     socketService.connect();

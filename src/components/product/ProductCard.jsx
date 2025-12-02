@@ -1,16 +1,12 @@
-// src/components/ProductCard.jsx
 "use client";
 
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { User, MessageSquare } from 'lucide-react';
-import Link from 'next/link';
-import process
-  from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
+import { User, MessageSquare, ShoppingCart } from 'lucide-react';
+import {observer} from "mobx-react-lite"; // Импортируем ShoppingCart
 
-
-export function ProductCard({
+export const ProductCard = observer(({
                               id,
                               name,
                               description,
@@ -18,13 +14,20 @@ export function ProductCard({
                               photo,
                               category,
                               onClick,
-                              seller,
                               onChat,
-                              className
-                            }) {
+                              seller,
+                              className,
+                              onAddToCart,
+                            }) => {
   const sellerName = seller?.name || (seller?.email ? seller.email.split('@')[0] : 'Продавец');
   const sellerId = seller?.id;
 
+  const productData = {
+    id,
+    name,
+    price,
+    photo,
+  };
 
   return (
     <Card
@@ -37,7 +40,8 @@ export function ProductCard({
       <div className="relative w-full h-60 bg-gray-100 dark:bg-white/10">
         {photo ? (
           <img
-            src={"https://klab-server.onrender.com/" + photo}
+            // Исправлена проблема с корневым путем, если он был
+            src={process.env.NEXT_PUBLIC_API_URL + photo} // Использование переменной окружения
             alt={name}
             className="object-cover w-full h-full"
           />
@@ -67,7 +71,6 @@ export function ProductCard({
           </p>
         )}
 
-        {/* 1. ✅ Красивое отображение продавца */}
         <div className="flex items-center gap-2 mb-3 py-1 px-2 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs text-gray-600 dark:text-gray-300">
           <User className="w-3 h-3 text-blue-600 dark:text-blue-400" />
           <span className="font-medium truncate" title={sellerName}>
@@ -75,27 +78,39 @@ export function ProductCard({
           </span>
         </div>
 
-        {/* 2. ✅ Цена */}
         <p className="text-blue-600 font-bold text-xl">
-          {price} so'm
+          {price} so&apos;m
         </p>
       </CardContent>
 
-      {/* Footer - кнопки */}
       <CardFooter className="flex flex-col space-y-2 pt-0">
-        <Button
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-          onClick={onClick}
-        >
-          Sotib olish
-        </Button>
 
-        {/* 3. ✅ Кнопка Чата */}
+        <div className="flex gap-2 w-full">
+
+          <Button
+            variant="outline"
+            className="flex-grow hover:text-primary border-blue-600 text-blue-600 hover:bg-blue-600/30 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-gray-800"
+            onClick={onAddToCart ? () => onAddToCart(productData) : () => console.log('Add to cart:', productData.id)}
+          >
+            <ShoppingCart className="w-4 h-4" />
+          </Button>
+
+          {/* Кнопка Sotib olish (Купить) */}
+          <Button
+            className="flex-grow-[3] bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={onClick}
+          >
+            Savatga o&apos;tish
+          </Button>
+
+        </div>
+
+
+        {/* Кнопка Чата */}
         {sellerId && (
           <Button
             variant="outline"
-            className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-gray-800"
-            // Если onChat определен, используем его, иначе просто консоль
+            className=" w-full flex-grow hover:text-primary border-blue-600 text-blue-600 hover:bg-blue-600/30 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-gray-800"
             onClick={onChat ? () => onChat(sellerId) : () => console.log('Chat with:', sellerId)}
           >
             <MessageSquare className="w-4 h-4 mr-2" />
@@ -105,4 +120,4 @@ export function ProductCard({
       </CardFooter>
     </Card>
   );
-}
+})

@@ -1,6 +1,7 @@
 // src/services/socket.service.ts
 import { io, Socket } from 'socket.io-client';
 import {Message} from "@/types/chat.types";
+import {authStore} from "@/stores/auth.store";
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -10,9 +11,9 @@ class SocketService {
   private lastChatId?: string;
 
   private constructor() {
-    this.socket = io(SOCKET_URL, {
+    // Подключаемся к namespace /chat, как на бэкенде (@WebSocketGateway({ namespace: 'chat' }))
+    this.socket = io(`${SOCKET_URL}/chat`, {
       transports: ['websocket'],
-      withCredentials: true,
       autoConnect: false,
       reconnection: true,
       reconnectionAttempts: Infinity,
@@ -20,7 +21,7 @@ class SocketService {
     });
 
     this.socket.on('connect', () => {
-      console.log('WebSocket подключён');
+      console.log('WebSocket подключён к /chat');
       if (this.lastChatId) {
         this.joinChat(this.lastChatId);
       }
@@ -44,8 +45,18 @@ class SocketService {
 
   connect() {
     if (!this.socket.connected) {
+      // Достаём актуальный access token из store (или функцию, возвращающую токен)
+      const token = authStore.user?.accessToken || authStore.accessToken || null;
+      if (token) {
+        // Важно: socket.auth может быть задан как объект — сокет.io читает его при (re)connect
+        this.socket.auth = { token };
+      }
       this.socket.connect();
     }
+  }
+
+  setToken(token: string | null) {
+    this.socket.auth = token ? { token } : {};
   }
 
   disconnect() {
@@ -54,24 +65,25 @@ class SocketService {
 
   joinChat(chatId: string) {
     this.lastChatId = chatId;
-    this.socket.emit('join_chat', chatId)
+    this.socket.emit('joinChat', { chatId });
   }
 
   leaveChat(chatId: string) {
-    this.socket.emit('leave_chat', chatId);
+    this.socket.emit('leaveChat', { chatId });
     if (this.lastChatId === chatId) {
       this.lastChatId = undefined;
     }
   }
 
   sendMessage(dto: { chatId: string; senderId: string; content: string; tempId?: string }) {
-    this.socket.emit('send_message', dto);
+    // На сервер отправляем только необходимые поля
+    this.socket.emit('sendMessage', { chatId: dto.chatId, content: dto.content });
   }
 
   onNewMessage(callback: (message: Message) => void): () => void {
     const handler = (data: Message) => callback(data);
-    this.socket.on('new_message', handler);
-    return () => this.socket.off('new_message', handler);
+    this.socket.on('newMessage', handler);
+    return () => this.socket.off('newMessage', handler);
   }
 }
 
