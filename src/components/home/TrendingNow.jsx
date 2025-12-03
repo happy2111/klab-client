@@ -11,28 +11,31 @@ export default function TrendingNow() {
   ];
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-20 bg-muted/50">
       <div className="max-w-7xl mx-auto px-6 text-center">
-        <h2 className="text-4xl md:text-5xl text-gray-800 mb-4">
+        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
           Trending Now
         </h2>
-        <p className="text-gray-600 mb-12">Most popular items this season</p>
+        <p className="text-muted-foreground text-lg mb-12 max-w-2xl mx-auto">
+          Most popular items this season
+        </p>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-10">
           {items.map((item, i) => (
             <div key={i} className="group cursor-pointer">
-              <div className="relative overflow-hidden rounded-xl mb-4">
+              <div className="relative overflow-hidden rounded-xl mb-4 bg-muted">
                 {item.img ? (
                   <img
                     src={item.img}
                     alt={item.name}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition duration-500"
+                    className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
-                  <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-64" />
+                  <div className="w-full aspect-square bg-muted border-2 border-dashed border-border rounded-xl" />
                 )}
               </div>
-              <p className="text-sm uppercase tracking-wider text-gray-700 font-medium">
+
+              <p className="text-sm uppercase tracking-wider font-medium text-foreground/80 group-hover:text-foreground transition">
                 {item.name}
               </p>
             </div>

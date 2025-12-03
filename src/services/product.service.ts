@@ -20,7 +20,7 @@ export class ProductService {
 
   async getAll(filter?: FilterProductDto) {
     const res = await api.get("/products", { params: filter });
-    return res.data; // { data, page, limit, total, pages }
+    return res.data;
   }
 
   async getOne(id: string) {

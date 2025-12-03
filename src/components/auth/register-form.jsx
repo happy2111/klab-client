@@ -34,7 +34,6 @@ export const RegisterForm = observer(({ className, ...props }) => {
     try {
       const dto = registerSchema.parse({ name, email, password, role: (role || 'CLIENT').toUpperCase() });
 
-      alert(dto.role)
       const success = await authStore.register(dto);
 
       if (success) {
@@ -55,7 +54,7 @@ export const RegisterForm = observer(({ className, ...props }) => {
 
   return (
     <div className={cn(
-      "min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:to-black px-4",
+      "min-h-screen flex items-center justify-center bg-white dark:bg-black px-4",
       className
     )} {...props}>
       <Card className="w-full max-w-md shadow-2xl border-0">

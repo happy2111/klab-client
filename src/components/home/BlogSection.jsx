@@ -1,12 +1,12 @@
 export default function BlogSection() {
   const posts = [
     {
-      img: "/images/BlogSection.png", 
+      img: "/images/BlogSection.png",
       title: "TOP 10 INTERIOR DESIGN TRENDS FOR 2025",
       desc: "Discover the latest trends transforming modern homes, from earthy tones to sustainable materials.",
     },
     {
-      img: "/images/BlogSection2.png",  
+      img: "/images/BlogSection2.png",
       title: "HOW TO CHOOSE THE PERFECT RUG FOR ANY ROOM",
       desc: "Expert tips on selecting the right size, style, and material to elevate your space.",
     },
@@ -18,38 +18,40 @@ export default function BlogSection() {
   ];
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-6 text-center">
-        <h2 className="text-4xl md:text-5xl text-gray-800 mb-4">
+        <h2 className="text-4xl md:text-5xl font-bold mb-4">
           From Our Blog
         </h2>
-        <p className="text-gray-600 mb-12">Stories, tips, and inspiration for your home</p>
+        <p className="text-muted-foreground text-lg mb-12 max-w-2xl mx-auto">
+          Stories, tips, and inspiration for your home
+        </p>
 
-        <div className="grid md:grid-cols-3 gap-10">
+        <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
           {posts.map((post, i) => (
-            <div
+            <article
               key={i}
-              className="group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500"
+              className="group cursor-pointer overflow-hidden rounded-xl bg-card shadow-lg hover:shadow-2xl transition-shadow duration-500 border border-border"
             >
-              {/* RASIM */}
-              <div className="relative overflow-hidden">
+              {/* Image */}
+              <div className="relative overflow-hidden bg-muted">
                 <img
                   src={post.img}
                   alt={post.title}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition duration-700"
+                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              {/* MATN */}
+              {/* Content */}
               <div className="p-6 text-left">
-                <h3 className="text-xl font-semibold text-gray-800 mb-3 line-clamp-2">
+                <h3 className="text-xl font-semibold text-foreground mb-3 line-clamp-2">
                   {post.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed text-sm">
+                <p className="text-muted-foreground leading-relaxed text-sm">
                   {post.desc}
                 </p>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </div>

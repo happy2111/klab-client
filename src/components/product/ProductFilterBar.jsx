@@ -8,11 +8,13 @@ import { Button } from '@/components/ui/button';
 import Calendar05 from "@/components/calendar-05";
 import { Funnel } from "lucide-react";
 import {Input} from "@/components/ui/input";
+import {runInAction} from "mobx";
 
 export const ProductFilterBar = observer(() => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
   const [dateRange, setDateRange] = useState({});
+  const [search, setSearch] = useState('');
 
   const calendarRef = useRef(null);
 
@@ -43,9 +45,13 @@ export const ProductFilterBar = observer(() => {
   const resetFilters = () => {
     setSelectedCategory('');
     setDateRange({});
-    setSearch('');
+    runInAction(() => {
+      productStore.setSearch('');
+    })
     setShowCalendar(false);
-    productStore.search = '';
+    runInAction(() => {
+     productStore.search = '';
+    })
     productStore.getAll({});
   };
 
@@ -54,13 +60,11 @@ export const ProductFilterBar = observer(() => {
       {/* Поиск */}
       <Input
         type="text"
-        // Привязываем к состоянию store
         value={productStore.search}
         onChange={(e) => productStore.setSearch(e.target.value)}
-        // Измените onKeyUp, чтобы он вызывал поиск (который уже есть в store)
         onKeyUp={(e) => {
           if (e.key === 'Enter') {
-            productStore.setSearch(e.target.value); // setsearch уже вызывает getAll
+            productStore.setSearch(e.target.value);
           }
         }}
         placeholder="Izlash..."

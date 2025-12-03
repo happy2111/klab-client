@@ -52,7 +52,7 @@ const ProfilePageContent = observer(() => {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black py-10 px-4">
-      <main className="container mx-auto max-w-7xl">
+      <main className="container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           <ProfileDetails />
           <div className="flex flex-col gap-6">
@@ -61,7 +61,7 @@ const ProfilePageContent = observer(() => {
               onClick={() => authStore.logout()}
               className="bg-red-600 hover:bg-red-700 text-white font-medium"
             >
-              Чиқиш (Logout)
+              Logout
             </Button>
           </div>
         </div>

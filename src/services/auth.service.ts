@@ -4,12 +4,12 @@ import { LoginDto, RegisterDto } from "./schemas/auth.schema";
 export class AuthService {
   async login(dto: LoginDto) {
     const res = await api.post("/auth/login", dto);
-    return res.data; // { accessToken }
+    return res.data;
   }
 
   async register(dto: RegisterDto) {
     const res = await api.post("/auth/register", dto);
-    return res.data; // { accessToken }
+    return res.data;
   }
 
   async logout() {
@@ -19,6 +19,6 @@ export class AuthService {
 
   async refresh() {
     const res = await api.post("/auth/refresh"); // cookie отправляется автоматически
-    return res.data; // { accessToken }
+    return res.data;
   }
 }

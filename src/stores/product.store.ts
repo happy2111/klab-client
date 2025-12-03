@@ -35,9 +35,11 @@ class ProductStore {
         page: this.page,
         limit: this.limit,
         search: this.search,
-        ...filter, // Переданный filter может перезаписать page/limit/search
+        ...filter,
       };
       const data = await this.service.getAll(finalFilter);
+      console.log("data: ")
+      data.data.map(({ name, price }) => console.log(name, price))
       runInAction(() => {
         this.products = data.data;
         this.page = data.page;
@@ -45,6 +47,8 @@ class ProductStore {
         this.total = data.total;
         this.pages = data.pages;
       });
+      console.log("products: ")
+      this.products.map(({ name, price }) => console.log(name, price))
       return true;
     } catch {
       toast.error("Mahsulotlarni olishda xatolik yuz berdi");
@@ -123,7 +127,6 @@ class ProductStore {
     }
   }
 
-  // === PAGINATION HELPERS ===
   setPage(page: number) {
     this.page = page;
     this.getAll({ page, limit: this.limit });
@@ -133,13 +136,23 @@ class ProductStore {
     this.limit = limit;
     this.getAll({ page: this.page, limit });
   }
-// ProductStore.ts
 
   setSearch(search: string) {
     this.search = search;
     this.page = 1;
-    this.getAll(); // Вызываем без аргументов, чтобы getAll использовал this.search и this.page
+    this.getAll();
   }
 }
 
-export const productStore = new ProductStore();
+let store: ProductStore | null = null;
+
+export function getProductStore() {
+  if (!store) {
+    store = new ProductStore();
+  }
+  return store;
+}
+
+export const productStore = getProductStore();
+
+

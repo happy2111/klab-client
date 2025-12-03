@@ -154,7 +154,7 @@ const ChatPage = observer(() => {
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 px-4 py-6">
+      <ScrollArea className="flex-1 px-4 py-6 mb-6 ">
         <div className="container space-y-4 max-w-4xl mx-auto">
           {chatStore.loading ? (
             <div className="space-y-4">

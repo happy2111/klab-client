@@ -32,7 +32,7 @@ const ProfileProducts = ({products}) => {
                   className="group block border rounded-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="bg-gray-200 border-2 border-dashed rounded-t-lg w-full h-48 group-hover:opacity-90 transition-opacity">
-                    {product.images?.[0] ? (
+                    {product.photo?.[0] ? (
                       <img
                         src={"https://klab-server.onrender.com/" + product.photo}
                         alt={product.title}

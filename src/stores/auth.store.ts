@@ -1,3 +1,5 @@
+import {profileStore} from "@/stores/profile.store";
+
 function debugLog(...args: any[]) {
   try {
     console.log(...args);
@@ -111,6 +113,7 @@ class AuthStore {
       const data = await this.service.register(dto);
       debugLog("register RESPONSE:", data);
       runInAction(() => {
+        profileStore.clearProfile();
         this.accessToken = data.accessToken;
         this.user = data.user;
         this.saveTokenToStorage(data.accessToken);
@@ -203,6 +206,7 @@ class AuthStore {
       this.removeTokenFromStorage();
       chatStore.destroy();
       socketService.disconnect();
+      profileStore.clearProfile();
     });
   }
 }

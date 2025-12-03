@@ -10,6 +10,8 @@ import { chatStore } from "@/stores/chat2.store";
 
 function ProductList() {
   const router = useRouter();
+  console.log("render list", productStore.products);
+
 
   const handleChatClick = (sellerId) => {
     chatStore.createAndOpenChat(sellerId);
@@ -39,8 +41,6 @@ function ProductList() {
           name={p.name}
           description={p.description}
           price={p.price}
-          // Предполагаем, что p.photo может быть undefined,
-          // и это обработано в CartStore/ProductCard.
           photo={p.photo}
           category={p.category?.name}
           seller={p.seller}

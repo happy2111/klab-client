@@ -22,6 +22,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CategoryService } from '@/services/category.service';
 import { useRouter } from 'next/navigation';
+import {profileStore} from "@/stores/profile.store";
 
 const CreateProductPage = observer(() => {
   const router = useRouter();
@@ -41,7 +42,7 @@ const CreateProductPage = observer(() => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await CategoryService.getAll(); // вернёт массив
+        const data = await CategoryService.getAll();
         setCategories(data);
         if (data.length > 0) {
           setForm((prev) => ({ ...prev, categoryId: data[0].id }));
@@ -67,7 +68,12 @@ const CreateProductPage = observer(() => {
     e.preventDefault();
     const dto = { ...form, price: Number(form.price), stock: Number(form.stock) };
     await productStore.create(dto);
-    router.push('/');
+    try {
+      await profileStore.fetchProfile();
+    } catch (err) {
+      console.log(err)
+    }
+    router.push('/profile');
 
   };
 
