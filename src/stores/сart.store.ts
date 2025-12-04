@@ -1,7 +1,5 @@
-// CartStore.ts
 import { makeAutoObservable, runInAction, computed } from "mobx";
 import { toast } from "sonner";
-// Предполагается, что вы импортируете типы DTO из файла со схемами
 import { CreateProductDto } from "@/services/schemas/product.schema";
 
 
@@ -14,8 +12,7 @@ interface CartItem extends ProductBase {
 
 class CartStore {
   cartItems: CartItem[] = [];
-  loading = false; // Сохраняем для имитации checkout
-
+  loading = false;
   constructor() {
     makeAutoObservable(this);
     this.loadCartFromStorage();

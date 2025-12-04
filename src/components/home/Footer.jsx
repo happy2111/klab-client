@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 
 export default function Footer() {
   const pathname = usePathname();
-  const hide = pathname.startsWith('/chat');
+  const hide = pathname.startsWith('/chat-v2');
 
   if (hide) return null;
 

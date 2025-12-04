@@ -15,3 +15,4 @@ export const registerSchema = z.object({
 });
 
 export type RegisterDto = z.infer<typeof registerSchema>;
+

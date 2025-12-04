@@ -48,7 +48,6 @@ const ChatPage = observer(() => {
     chatStore.startTyping();
   };
 
-  // Список чатов
   if (!chatStore.currentChat) {
     return (
       <div className="flex h-screen flex-col bg-background">

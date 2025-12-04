@@ -82,7 +82,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const ok = await authStore.refresh(); // обновляет токен в сторе
+        const ok = await authStore.refresh();
         if (!ok) throw new Error("Refresh failed");
 
         failedRequestsQueue.forEach(p => p.resolve());

@@ -4,24 +4,21 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
 
-// Предполагается, что cartStore экспортируется из '@/stores/cart.store'
 import { cartStore } from '@/stores/сart.store';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"; // Предполагаем, что у вас есть компонент Input
+import { Input } from "@/components/ui/input";
 import Link from 'next/link';
 import {useRouter} from "next/navigation";
 
-// Вспомогательная функция для форматирования цены
 const formatPrice = (price) => {
   return new Intl.NumberFormat('ru-RU', {
     style: 'currency',
-    currency: 'USD', // Или 'UZS'/'RUB' в зависимости от вашей валюты
+    currency: 'UZS',
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(price);
 };
 
-// --- Компонент элемента корзины ---
 
 const CartItemRow = observer(({ item }) => {
   const { id, name, price, quantity, photo } = item;
@@ -40,7 +37,6 @@ const CartItemRow = observer(({ item }) => {
   return (
     <div className="relative flex items-center justify-between border-b dark:border-border py-4 last:border-b-0">
 
-      {/* Изображение и Название */}
       <div className="flex items-center gap-4 w-1/2">
         <img
           src={photo || 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.shopify.com%2Fs%2Ffiles%2F1%2F0533%2F2089%2Ffiles%2Fplaceholder-images-product-4_large.png%3Fv%3D1530129360&f=1&nofb=1&ipt=2377d1403541ca8fc8d1464f10e8b9b90ca3d8b662f498035f8715b10f03afeb'}
@@ -50,7 +46,6 @@ const CartItemRow = observer(({ item }) => {
         <span className="font-semibold text-foreground">{name}</span>
       </div>
 
-      {/* Количество (Controls) */}
       <div className="flex items-center absolute top-0 left-1/2 gap-2 w-1/4 justify-center">
         <Button
           variant="outline"
@@ -82,7 +77,6 @@ const CartItemRow = observer(({ item }) => {
         </Button>
       </div>
 
-      {/* Общая цена за товар и Удаление */}
       <div className="flex items-center gap-4 w-1/4 justify-end">
         <span className="font-bold min-w-[80px] text-right text-primary">{formatPrice(totalPrice)}</span>
         <Button
@@ -98,13 +92,11 @@ const CartItemRow = observer(({ item }) => {
   );
 });
 
-// --- Основной компонент страницы ---
 
 const CartPage = observer(() => {
   const { cartItems, totalAmount, checkout, itemCount, loading, clearCart } = cartStore;
   const router = useRouter();
   const handleCheckout = async () => {
-    // Вызываем имитацию оформления заказа из MobX Store
     await checkout();
   };
 
@@ -117,7 +109,6 @@ const CartPage = observer(() => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        {/* Левая колонка: Список товаров */}
         <div className="lg:col-span-2">
           <div className="bg-card shadow-lg rounded-lg p-6 border border-border">
 
@@ -152,7 +143,6 @@ const CartPage = observer(() => {
           </div>
         </div>
 
-        {/* Правая колонка: Итог и Оформление */}
         <div className="lg:col-span-1">
           <div className="bg-card shadow-lg rounded-lg p-6 border border-border sticky top-20">
             <h2 className="text-2xl font-bold text-foreground mb-4 border-b pb-3 dark:border-border">
