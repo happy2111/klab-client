@@ -77,11 +77,10 @@ const CheckoutPage = observer(() => {
       return;
     }
 
-    // Вызов MobX action для оформления заказа
+    router.push('/checkout/success');
     const success = await checkout();
 
     if (success) {
-      // После успешного оформления, перенаправляем на страницу подтверждения
       router.push('/'); // Или '/order-success'
     }
   };
